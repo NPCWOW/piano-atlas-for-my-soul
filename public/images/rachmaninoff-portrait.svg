@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-labelledby="title desc">
+  <title id="title">Сергей Рахманинов</title>
+  <desc id="desc">Монохромный стилизованный портрет композитора</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9e2d6"/>
+      <stop offset="1" stop-color="#b9aa96"/>
+    </linearGradient>
+    <radialGradient id="light" cx="63%" cy="28%" r="55%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="mono"/>
+      <feComponentTransfer in="mono"><feFuncA type="table" tableValues="0 .08"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="900" height="700" fill="url(#bg)"/>
+  <rect width="900" height="700" fill="url(#light)"/>
+  <path d="M540 104c86 9 139 80 132 164-3 43-20 82-48 112 52 37 92 93 110 158l27 100H291l23-101c19-83 71-143 142-170-21-35-31-73-27-113 8-91 55-160 111-150Z" fill="#1b1b1a" opacity=".96"/>
+  <ellipse cx="548" cy="251" rx="108" ry="137" fill="#cdbda9"/>
+  <path d="M460 210c12-81 53-121 108-117 69 5 112 55 105 137-31-22-65-37-105-43-39-6-75 1-108 23Z" fill="#292827"/>
+  <path d="M469 253c22 18 44 28 70 31 36 4 72-2 108-19-6 79-44 130-100 130-55 0-88-48-78-142Z" fill="#d6c8b8"/>
+  <path d="M502 249c12-8 26-11 39-8M590 242c14-2 28 1 40 9" fill="none" stroke="#4d463f" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="525" cy="263" rx="7" ry="5" fill="#262321"/>
+  <ellipse cx="611" cy="263" rx="7" ry="5" fill="#262321"/>
+  <path d="M566 266c-7 22-8 40 2 55 9 4 18 4 27 0" fill="none" stroke="#796b5f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M524 343c28 13 57 13 87-2" fill="none" stroke="#6f5f53" stroke-width="6" stroke-linecap="round"/>
+  <path d="M468 391c58 33 120 36 185 3 53 32 88 79 106 144H319c20-78 69-127 149-147Z" fill="#121212"/>
+  <path d="M492 392l55 70 59-71 28 148H457Z" fill="#eee7dc"/>
+  <path d="M543 460h13l25 79h-63Z" fill="#30302f"/>
+  <path d="M388 515c75-7 139 0 193 21l-21 55H349Z" fill="#171716"/>
+  <path d="M630 399c46 36 78 82 96 139l-77 11c-7-46-31-82-72-109Z" fill="#111"/>
+  <path d="M423 412c-47 32-80 73-99 126l74 12c10-44 34-81 71-111Z" fill="#181817"/>
+  <rect width="900" height="700" filter="url(#grain)" opacity=".45"/>
+</svg>
