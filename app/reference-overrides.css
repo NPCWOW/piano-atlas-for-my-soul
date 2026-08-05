@@ -8,9 +8,8 @@
     --spot-y: 46%;
     min-height: 300px !important;
     background:
-      radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(255,255,255,.34), transparent 24%),
-      linear-gradient(90deg, #f4efe6 0%, #f4efe6 43%, rgba(244,239,230,.95) 50%, rgba(224,217,207,.16) 69%, rgba(196,190,182,.06) 100%),
-      #e6dfd5 !important;
+      radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(255,255,255,.18), transparent 28%),
+      #eee6da !important;
   }
 
   main.lg\:pl-\[216px\] > section > div > header > img {
@@ -20,18 +19,15 @@
   main.lg\:pl-\[216px\] > section > div > header::after {
     content: "";
     position: absolute;
-    inset: -12px -12px -12px 41%;
+    inset: -10px;
     z-index: 1;
-    background-image:
-      linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 12%, rgba(244,239,230,.22) 35%, transparent 55%),
-      url("/images/works/rachmaninoff-hero.jpg");
+    background-image: url("/images/works/rachmaninoff-hero.jpg");
     background-repeat: no-repeat;
-    background-size: 100% 100%, cover;
+    background-size: cover;
     background-position:
-      center,
       calc(50% + var(--portrait-x)) calc(50% + var(--portrait-y));
     filter: sepia(.04) contrast(1.01);
-    transform: scale(1.035);
+    transform: scale(1.025);
     transition: filter 350ms ease;
     pointer-events: none;
     will-change: background-position;
@@ -46,11 +42,9 @@
     max-width: 54% !important;
   }
 
+  /* The old bridge gradient created a visible vertical seam across the title. */
   main.lg\:pl-\[216px\] > section > div > header > div:last-child {
-    z-index: 4;
-    left: 42% !important;
-    width: 175px !important;
-    background: linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 38%, transparent 100%) !important;
+    display: none !important;
   }
 
   .pa-hover-card {
@@ -110,12 +104,15 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   main > section > div > header {
     min-height: 300px !important;
     background:
-      linear-gradient(90deg, #f4efe6 0%, #f4efe6 45%, rgba(244,239,230,.78) 58%, rgba(244,239,230,.12) 78%, transparent 100%),
-      url("/images/works/rachmaninoff-hero.jpg") right center / auto 100% no-repeat,
+      url("/images/works/rachmaninoff-hero.jpg") center / cover no-repeat,
       #e5ddd2 !important;
   }
 
   main > section > div > header > img {
+    display: none !important;
+  }
+
+  main > section > div > header > div:last-child {
     display: none !important;
   }
 }
