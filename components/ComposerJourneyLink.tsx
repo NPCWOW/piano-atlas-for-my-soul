@@ -59,14 +59,19 @@ export default function ComposerJourneyLink() {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const closeJourney = () => {
     setVisible(false);
     audioRef.current?.pause();
     setPlaying(false);
-    window.setTimeout(() => setOpen(false), 500);
+    window.setTimeout(() => {
+      setOpen(false);
+      setProgress(0);
+    }, 500);
   };
 
   const openJourney = () => {
@@ -96,6 +101,13 @@ export default function ComposerJourneyLink() {
     };
   }, [open]);
 
+  const updateProgress = () => {
+    const element = scrollRef.current;
+    if (!element) return;
+    const max = element.scrollHeight - element.clientHeight;
+    setProgress(max > 0 ? Math.min(100, (element.scrollTop / max) * 100) : 0);
+  };
+
   const toggleAudio = async () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -119,9 +131,11 @@ export default function ComposerJourneyLink() {
         type="button"
         onClick={openJourney}
         aria-label="Открыть путешествие по жизни Сергея Рахманинова"
-        className="absolute inset-y-0 right-0 z-[15] w-[54%] cursor-zoom-in rounded-r-[1.7rem] outline-none focus-visible:ring-2 focus-visible:ring-[#a67d35]"
+        className="group absolute inset-y-0 right-0 z-[15] w-[54%] cursor-zoom-in overflow-hidden rounded-r-[1.7rem] outline-none focus-visible:ring-2 focus-visible:ring-[#a67d35]"
       >
-        <span className="absolute bottom-11 right-8 hidden rounded-full border border-white/30 bg-black/35 px-4 py-2 text-[10px] uppercase tracking-[.18em] text-white/90 opacity-0 shadow-lg backdrop-blur transition duration-300 hover:opacity-100 sm:block">
+        <span className="absolute inset-6 rounded-[1.35rem] border border-white/0 transition duration-500 group-hover:border-white/25 group-hover:bg-white/[.025]" />
+        <span className="absolute right-[31%] top-[37%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/0 transition duration-700 group-hover:scale-125 group-hover:border-white/30 group-hover:bg-white/[.035]" />
+        <span className="absolute bottom-11 right-8 hidden translate-y-3 rounded-full border border-white/30 bg-black/45 px-4 py-2 text-[10px] uppercase tracking-[.18em] text-white/90 opacity-0 shadow-lg backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
           Нажмите на портрет · Жизнь в музыке
         </span>
       </button>
@@ -146,10 +160,17 @@ export default function ComposerJourneyLink() {
             onEnded={() => setPlaying(false)}
           />
 
+          <div className="fixed inset-x-0 top-0 z-[1020] h-[2px] bg-white/10">
+            <div
+              className="h-full bg-[#c8a760] transition-[width] duration-150"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
           <button
             type="button"
             onClick={closeJourney}
-            className="fixed right-5 top-5 z-[1010] grid h-12 w-12 place-items-center rounded-full border border-white/25 bg-black/40 text-xl text-white backdrop-blur transition hover:bg-white/10"
+            className="fixed right-5 top-5 z-[1010] grid h-12 w-12 place-items-center rounded-full border border-white/25 bg-black/40 text-xl text-white backdrop-blur transition hover:rotate-90 hover:bg-white/10"
             aria-label="Закрыть путешествие"
           >
             ×
@@ -164,10 +185,14 @@ export default function ComposerJourneyLink() {
             {playing ? "Пауза" : "Включить музыку"}
           </button>
 
-          <div className="h-full overflow-y-auto overscroll-contain scroll-smooth">
+          <div
+            ref={scrollRef}
+            onScroll={updateProgress}
+            className="h-full overflow-y-auto overscroll-contain scroll-smooth"
+          >
             <section className="relative flex min-h-screen items-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 lg:px-20">
               <div
-                className={`absolute inset-0 bg-[url('/images/works/rachmaninoff-hero.jpg')] bg-cover bg-[68%_52%] grayscale transition-all duration-[1400ms] ease-out ${
+                className={`absolute inset-0 bg-[url('/images/works/rachmaninoff-hero.jpg')] bg-cover bg-[68%_52%] grayscale transition-all duration-[1600ms] ease-out ${
                   visible ? "scale-110 opacity-80" : "scale-100 opacity-0"
                 }`}
               />
@@ -191,6 +216,12 @@ export default function ComposerJourneyLink() {
                   <span className="h-px w-20 bg-[#c6a45e]/55" />
                   <span className="text-sm text-white/55">Прокрутите вниз</span>
                 </div>
+                <div className="mt-12 flex items-center gap-3 text-[10px] uppercase tracking-[.2em] text-white/35">
+                  <span className="inline-block h-8 w-5 rounded-full border border-white/25 p-1">
+                    <span className="mx-auto block h-1.5 w-1 rounded-full bg-[#d0b06c] animate-bounce" />
+                  </span>
+                  Путешествие начинается
+                </div>
               </div>
             </section>
 
@@ -208,8 +239,8 @@ export default function ComposerJourneyLink() {
                       <p className="font-serif text-5xl text-[#c8a96b] sm:text-6xl lg:text-right">{chapter.year}</p>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.035] p-7 shadow-2xl shadow-black/30 backdrop-blur sm:p-10">
-                      <div className={`absolute inset-0 opacity-35 ${chapterBackground[chapter.tone]}`} />
+                    <div className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.035] p-7 shadow-2xl shadow-black/30 backdrop-blur transition duration-700 hover:-translate-y-1 hover:border-[#c3a15b]/30 sm:p-10">
+                      <div className={`absolute inset-0 opacity-35 transition duration-700 group-hover:scale-105 group-hover:opacity-50 ${chapterBackground[chapter.tone]}`} />
                       <div className="relative z-10 max-w-2xl">
                         <p className="text-[10px] uppercase tracking-[.24em] text-[#b99658]">{chapter.label}</p>
                         <h3 className="mt-5 font-serif text-3xl sm:text-5xl">{chapter.title}</h3>
@@ -236,7 +267,7 @@ export default function ComposerJourneyLink() {
               <div>
                 <p className="font-serif text-4xl text-white/90 sm:text-6xl">Но музыка не заканчивается.</p>
                 <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-white/45">
-                  Это фундамент интерактивной биографии. Следующие версии добавят берёзовую рощу, карты, рукописи, архивные фотографии и более глубокие переходы между сценами.
+                  Жизнь заканчивается датой, но произведения продолжают существовать в новых исполнениях и новых слушателях.
                 </p>
                 <button
                   type="button"
