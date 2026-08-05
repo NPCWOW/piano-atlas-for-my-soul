@@ -25,7 +25,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position:
-      calc(50% + var(--portrait-x)) calc(50% + var(--portrait-y));
+      calc(56% + var(--portrait-x)) calc(59% + var(--portrait-y));
     filter: sepia(.04) contrast(1.01);
     transform: scale(1.025);
     transition: filter 350ms ease;
@@ -104,7 +104,7 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   main > section > div > header {
     min-height: 300px !important;
     background:
-      url("/images/works/rachmaninoff-hero.jpg") center / cover no-repeat,
+      url("/images/works/rachmaninoff-hero.jpg") 58% 60% / cover no-repeat,
       #e5ddd2 !important;
   }
 
