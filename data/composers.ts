@@ -14,7 +14,7 @@ export const composers: Composer[] = [
     country: { ru: "Россия", en: "Russia" },
     era: "romantic",
     portrait:
-      "https://cdn.loc.gov/service/pnp/cph/3c00000/3c03000/3c03100/3c03112v.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/b/be/Sergei_Rachmaninoff_cph.3a40575.jpg",
     biography: {
       ru: "Композитор, пианист и дирижёр, соединивший позднеромантическую выразительность с исключительным чувством формы и фортепианной фактуры.",
       en: "A composer, pianist and conductor who joined late-Romantic expression with an exceptional command of form and piano texture.",
