@@ -4,7 +4,7 @@
   main.lg\:pl-\[216px\] > section > div > header {
     min-height: 300px !important;
     background:
-      linear-gradient(90deg, #f4efe6 0%, #f4efe6 42%, rgba(244,239,230,.94) 49%, rgba(224,217,207,.16) 67%, rgba(196,190,182,.06) 100%),
+      linear-gradient(90deg, #f4efe6 0%, #f4efe6 43%, rgba(244,239,230,.95) 50%, rgba(224,217,207,.16) 69%, rgba(196,190,182,.06) 100%),
       #e6dfd5 !important;
   }
 
@@ -18,12 +18,12 @@
     inset: 0 0 0 42%;
     z-index: 1;
     background-image:
-      linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.86) 12%, rgba(244,239,230,.18) 34%, transparent 54%),
-      url("https://upload.wikimedia.org/wikipedia/commons/1/11/Sergei_Rachmaninoff_cph.3a40575.jpg");
+      linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 12%, rgba(244,239,230,.22) 35%, transparent 55%),
+      url("/images/rachmaninoff-approved-reference.svg");
     background-repeat: no-repeat;
-    background-size: 100% 100%, auto 116%;
-    background-position: center, right -8px bottom -16px;
-    filter: grayscale(1) sepia(.12) contrast(1.02);
+    background-size: 100% 100%, cover;
+    background-position: center, center;
+    filter: sepia(.04) contrast(1.01);
     pointer-events: none;
   }
 
@@ -35,8 +35,8 @@
   main.lg\:pl-\[216px\] > section > div > header > div:last-child {
     z-index: 4;
     left: 42% !important;
-    width: 170px !important;
-    background: linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.86) 38%, transparent 100%) !important;
+    width: 175px !important;
+    background: linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 38%, transparent 100%) !important;
   }
 }
 
@@ -69,8 +69,8 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   main > section > div > header {
     min-height: 300px !important;
     background:
-      linear-gradient(90deg, #f4efe6 0%, #f4efe6 45%, rgba(244,239,230,.74) 58%, rgba(244,239,230,.10) 77%, transparent 100%),
-      url("https://upload.wikimedia.org/wikipedia/commons/1/11/Sergei_Rachmaninoff_cph.3a40575.jpg") right -8px bottom -12px / auto 112% no-repeat,
+      linear-gradient(90deg, #f4efe6 0%, #f4efe6 45%, rgba(244,239,230,.78) 58%, rgba(244,239,230,.12) 78%, transparent 100%),
+      url("/images/rachmaninoff-approved-reference.svg") right center / auto 100% no-repeat,
       #e5ddd2 !important;
   }
 
