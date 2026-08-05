@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ComposerJourneyLink from "@/components/ComposerJourneyLink";
 import { getComposerById } from "@/data/composers";
 import { getWorkBySlug, works } from "@/data/works";
 
@@ -132,6 +133,7 @@ export default async function WorkPassportPage({
               className="absolute bottom-0 right-0 h-full w-[53%] object-cover object-top grayscale contrast-110"
             />
             <div className="absolute inset-y-0 left-[47%] w-32 bg-gradient-to-r from-[#e8e0d4] via-[#e8e0d4]/80 to-transparent" />
+            {composer.slug === "sergei-rachmaninoff" && <ComposerJourneyLink />}
           </header>
 
           <section className="relative z-20 -mt-8 grid overflow-hidden rounded-2xl border border-black/10 bg-[#fffdf8]/95 shadow-xl shadow-black/5 backdrop-blur md:grid-cols-4 xl:grid-cols-8">
