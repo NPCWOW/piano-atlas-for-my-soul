@@ -19,18 +19,18 @@
   main.lg\:pl-\[216px\] > section > div > header::after {
     content: "";
     position: absolute;
-    inset: -10px;
+    inset: -40px;
     z-index: 1;
     background-image: url("/images/works/rachmaninoff-hero.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position:
-      calc(56% + var(--portrait-x)) calc(59% + var(--portrait-y));
+      calc(50% + var(--portrait-x)) calc(72% + var(--portrait-y));
     filter: sepia(.04) contrast(1.01);
-    transform: scale(1.025);
+    transform: translateX(35px) translateY(25px) scale(1.025);
     transition: filter 350ms ease;
     pointer-events: none;
-    will-change: background-position;
+    will-change: background-position, transform;
   }
 
   main.lg\:pl-\[216px\] > section > div > header.pa-ambient-hero::after {
@@ -104,7 +104,7 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   main > section > div > header {
     min-height: 300px !important;
     background:
-      url("/images/works/rachmaninoff-hero.jpg") 58% 60% / cover no-repeat,
+      url("/images/works/rachmaninoff-hero.jpg") 68% 72% / cover no-repeat,
       #e5ddd2 !important;
   }
 
