@@ -26,7 +26,7 @@ export default function ConservatoryScene({ active, soundEnabled, registerRef }:
       active={active}
       chapterIndex={1}
       onRegister={registerRef}
-      backgroundImage="/images/journey/rachmaninoff-conservatory.webp"
+      backgroundImage="/images/journey/rachmaninoff-conservatory.png"
       backgroundPosition="center 46%"
       particles="dust"
       overlayVariant="interior"
