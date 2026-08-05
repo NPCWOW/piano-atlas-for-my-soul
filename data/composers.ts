@@ -13,6 +13,8 @@ export const composers: Composer[] = [
     died: "1943",
     country: { ru: "Россия", en: "Russia" },
     era: "romantic",
+    portrait:
+      "https://upload.wikimedia.org/wikipedia/commons/1/11/Sergei_Rachmaninoff_cph.3a40575.jpg",
     biography: {
       ru: "Композитор, пианист и дирижёр, соединивший позднеромантическую выразительность с исключительным чувством формы и фортепианной фактуры.",
       en: "A composer, pianist and conductor who joined late-Romantic expression with an exceptional command of form and piano texture.",
