@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import ChildhoodScene from "@/components/journey/ChildhoodScene";
+import ConservatoryScene from "@/components/journey/ConservatoryScene";
+import SceneTransition from "@/components/journey/SceneTransition";
 
 type TrackKey = "forest" | "youth" | "triumph" | "ocean" | "america" | "finale";
 
@@ -83,7 +85,6 @@ const chapters: Chapter[] = [
 ];
 
 const chapterBackground: Record<string, string> = {
-  gold: "bg-[radial-gradient(circle_at_72%_42%,rgba(214,187,120,.18),transparent_20%),linear-gradient(125deg,#070706_0%,#17130e_42%,#090806_100%)]",
   warm: "bg-[radial-gradient(circle_at_28%_28%,rgba(184,124,58,.18),transparent_28%),linear-gradient(135deg,#1a110b_0%,#0a0806_55%,#050505_100%)]",
   ocean: "bg-[radial-gradient(circle_at_76%_30%,rgba(118,145,164,.18),transparent_26%),linear-gradient(135deg,#0a1117_0%,#091016_45%,#050607_100%)]",
   america: "bg-[radial-gradient(circle_at_65%_25%,rgba(210,178,112,.14),transparent_24%),linear-gradient(135deg,#16110c_0%,#0b0a09_48%,#050505_100%)]",
@@ -261,7 +262,7 @@ export default function ComposerJourneyLink() {
         {soundEnabled ? "Выключить звук" : "Начать со звуком"}
       </button>
 
-      <div ref={scrollRef} onScroll={updateProgress} className="h-full overflow-y-auto overscroll-contain scroll-smooth">
+      <div ref={scrollRef} data-journey-scroll="true" onScroll={updateProgress} className="h-full overflow-y-auto overscroll-contain scroll-smooth">
         <section className="relative flex min-h-screen items-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 lg:px-20">
           <div className={`absolute inset-0 bg-[url('/images/works/rachmaninoff-hero.jpg')] bg-cover bg-[68%_52%] grayscale transition-all duration-[1600ms] ease-out ${visible ? "scale-110 opacity-80" : "scale-100 opacity-0"}`} />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_38%,transparent_0%,rgba(7,6,4,.15)_36%,rgba(7,6,4,.84)_100%)]" />
@@ -284,11 +285,23 @@ export default function ComposerJourneyLink() {
           registerRef={(element) => { chapterRefs.current[0] = element; }}
         />
 
+        <SceneTransition
+          fromImage="/images/journey/rachmaninoff-childhood.webp"
+          toImage="/images/journey/rachmaninoff-conservatory.webp"
+          label="1885 · Москва"
+        />
+
+        <ConservatoryScene
+          active={activeTrack === "youth"}
+          soundEnabled={soundEnabled}
+          registerRef={(element) => { chapterRefs.current[1] = element; }}
+        />
+
         <section className="relative bg-[#0d0b08] px-6 py-24 sm:px-12 lg:px-20">
           <div className="pointer-events-none absolute inset-y-0 left-[30px] w-px bg-gradient-to-b from-transparent via-[#b89455]/45 to-transparent sm:left-[55px] lg:left-[87px]" />
           <div className="mx-auto max-w-6xl space-y-24 sm:space-y-32">
-            {chapters.slice(1).map((chapter, offset) => {
-              const index = offset + 1;
+            {chapters.slice(2).map((chapter, offset) => {
+              const index = offset + 2;
               return (
                 <article
                   key={chapter.year}
