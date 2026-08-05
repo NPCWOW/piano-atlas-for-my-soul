@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import JourneySceneEngine from "./JourneySceneEngine";
-import SceneMistEdge from "./SceneMistEdge";
 
 type ConservatorySceneProps = {
   active: boolean;
@@ -32,8 +31,6 @@ export default function ConservatoryScene({ active, soundEnabled, registerRef }:
       particles="dust"
       overlayVariant="interior"
     >
-      <SceneMistEdge position="top" />
-
       <div className="relative z-20 mx-auto flex min-h-[112vh] max-w-[1600px] items-end justify-end px-7 pb-24 pt-24 sm:px-12 lg:px-20 xl:px-24">
         <div
           className={`max-w-[660px] text-left transition-all duration-[1500ms] ${
