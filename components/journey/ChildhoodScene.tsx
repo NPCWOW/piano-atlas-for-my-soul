@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import JourneySceneEngine from "./JourneySceneEngine";
+import SceneMistEdge from "./SceneMistEdge";
 
 type ChildhoodSceneProps = {
   active: boolean;
@@ -30,7 +31,7 @@ export default function ChildhoodScene({ active, soundEnabled, registerRef }: Ch
       particles="leaves"
       overlayVariant="forest"
     >
-      <div className="mx-auto flex min-h-[112vh] max-w-[1600px] items-end px-7 pb-24 pt-24 sm:px-12 lg:px-20 xl:px-24">
+      <div className="relative z-20 mx-auto flex min-h-[112vh] max-w-[1600px] items-end px-7 pb-24 pt-24 sm:px-12 lg:px-20 xl:px-24">
         <div className={`max-w-[640px] transition-all duration-[1500ms] ${revealed ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
           <div className="mb-8 flex items-center gap-4 text-[10px] uppercase tracking-[.3em] text-[#d2b16a]">
             <span>Глава I</span>
@@ -47,6 +48,8 @@ export default function ChildhoodScene({ active, soundEnabled, registerRef }: Ch
           </div>
         </div>
       </div>
+
+      <SceneMistEdge position="bottom" />
 
       <div className="pointer-events-none absolute right-7 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-5 text-[10px] uppercase tracking-[.2em] text-white/38 lg:flex">
         {["I", "II", "III", "IV", "V", "VI"].map((label, index) => (
