@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import JourneySceneEngine from "./JourneySceneEngine";
-import SceneMistEdge from "./SceneMistEdge";
 
 type ChildhoodSceneProps = {
   active: boolean;
@@ -48,8 +47,6 @@ export default function ChildhoodScene({ active, soundEnabled, registerRef }: Ch
           </div>
         </div>
       </div>
-
-      <SceneMistEdge position="bottom" />
 
       <div className="pointer-events-none absolute right-7 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-5 text-[10px] uppercase tracking-[.2em] text-white/38 lg:flex">
         {["I", "II", "III", "IV", "V", "VI"].map((label, index) => (
