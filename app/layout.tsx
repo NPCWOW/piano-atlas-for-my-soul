@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./reference-overrides.css";
 
 export const metadata: Metadata = {
   title: "Piano Atlas for my soul",
