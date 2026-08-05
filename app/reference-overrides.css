@@ -1,0 +1,76 @@
+/* Reference-driven visual corrections for the Musical Passport page. */
+
+@media (min-width: 1024px) {
+  main.lg\:pl-\[216px\] > section > div > header {
+    background:
+      linear-gradient(90deg, #f4efe6 0%, #f4efe6 39%, rgba(244,239,230,.90) 49%, rgba(224,217,207,.18) 65%, rgba(196,190,182,.08) 100%),
+      #e6dfd5 !important;
+  }
+
+  main.lg\:pl-\[216px\] > section > div > header > img {
+    display: none !important;
+  }
+
+  main.lg\:pl-\[216px\] > section > div > header::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 43%;
+    z-index: 1;
+    background-image:
+      linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.83) 15%, rgba(244,239,230,.18) 38%, transparent 58%),
+      url("https://i1.sndcdn.com/artworks-000248781782-lrhaa9-t1080x1080.jpg");
+    background-size: cover;
+    background-position: center 31%;
+    filter: grayscale(1) sepia(.14) contrast(1.03);
+    pointer-events: none;
+  }
+
+  main.lg\:pl-\[216px\] > section > div > header > div:first-child {
+    z-index: 2;
+  }
+
+  main.lg\:pl-\[216px\] > section > div > header > div:last-child {
+    z-index: 3;
+    left: 42% !important;
+    width: 180px !important;
+    background: linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.88) 35%, transparent 100%) !important;
+  }
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-5 {
+  min-height: 172px;
+  padding: 0 !important;
+  border: 1px solid rgba(22,22,20,.12) !important;
+  background-image:
+    linear-gradient(180deg, rgba(9,15,23,.08), rgba(5,10,16,.16)),
+    url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=88");
+  background-size: cover;
+  background-position: center 55%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-5 > * {
+  display: none !important;
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2 {
+  gap: 4px !important;
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2 i {
+  height: 34px !important;
+  border-radius: 3px !important;
+}
+
+@media (max-width: 1023px) {
+  main > section > div > header {
+    background:
+      linear-gradient(90deg, #f4efe6 0%, #f4efe6 46%, rgba(244,239,230,.25) 72%, transparent 100%),
+      url("https://i1.sndcdn.com/artworks-000248781782-lrhaa9-t1080x1080.jpg") right 25% center / 54% auto no-repeat,
+      #e5ddd2 !important;
+  }
+
+  main > section > div > header > img {
+    display: none !important;
+  }
+}
