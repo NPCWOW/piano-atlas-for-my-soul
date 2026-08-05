@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import AmbientMotion from "@/components/AmbientMotion";
 import "./globals.css";
 import "./reference-overrides.css";
 
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        {children}
+        <AmbientMotion />
+      </body>
     </html>
   );
 }
