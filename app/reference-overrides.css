@@ -2,8 +2,13 @@
 
 @media (min-width: 1024px) {
   main.lg\:pl-\[216px\] > section > div > header {
+    --portrait-x: 0px;
+    --portrait-y: 0px;
+    --spot-x: 50%;
+    --spot-y: 46%;
     min-height: 300px !important;
     background:
+      radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(255,255,255,.34), transparent 24%),
       linear-gradient(90deg, #f4efe6 0%, #f4efe6 43%, rgba(244,239,230,.95) 50%, rgba(224,217,207,.16) 69%, rgba(196,190,182,.06) 100%),
       #e6dfd5 !important;
   }
@@ -15,16 +20,25 @@
   main.lg\:pl-\[216px\] > section > div > header::after {
     content: "";
     position: absolute;
-    inset: 0 0 0 42%;
+    inset: -12px -12px -12px 41%;
     z-index: 1;
     background-image:
       linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 12%, rgba(244,239,230,.22) 35%, transparent 55%),
       url("/images/rachmaninoff-approved-reference.svg");
     background-repeat: no-repeat;
     background-size: 100% 100%, cover;
-    background-position: center, center;
+    background-position:
+      center,
+      calc(50% + var(--portrait-x)) calc(50% + var(--portrait-y));
     filter: sepia(.04) contrast(1.01);
+    transform: scale(1.035);
+    transition: filter 350ms ease;
     pointer-events: none;
+    will-change: background-position;
+  }
+
+  main.lg\:pl-\[216px\] > section > div > header.pa-ambient-hero::after {
+    filter: sepia(.05) contrast(1.025);
   }
 
   main.lg\:pl-\[216px\] > section > div > header > div:first-child {
@@ -37,6 +51,22 @@
     left: 42% !important;
     width: 175px !important;
     background: linear-gradient(90deg, #f4efe6 0%, rgba(244,239,230,.90) 38%, transparent 100%) !important;
+  }
+
+  .pa-hover-card {
+    transition:
+      transform 320ms cubic-bezier(.22,.61,.36,1),
+      box-shadow 320ms ease,
+      border-color 320ms ease,
+      background-color 320ms ease !important;
+    will-change: transform;
+  }
+
+  .pa-hover-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(157,116,48,.24) !important;
+    box-shadow: 0 16px 38px rgba(55,42,22,.10);
+    background-color: rgba(255,255,255,.76) !important;
   }
 }
 
@@ -63,6 +93,17 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
 main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2 i {
   height: 32px !important;
   border-radius: 3px !important;
+  transition: transform 220ms ease, filter 220ms ease, opacity 220ms ease;
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2:hover i {
+  opacity: .62;
+}
+
+main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2 i:hover {
+  transform: translateY(-3px) scale(1.06);
+  filter: saturate(1.12);
+  opacity: 1;
 }
 
 @media (max-width: 1023px) {
@@ -76,5 +117,13 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
 
   main > section > div > header > img {
     display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-hover-card,
+  main.lg\:pl-\[216px\] > section > div > header::after,
+  main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > div.mt-2 i {
+    transition: none !important;
   }
 }
