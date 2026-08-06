@@ -21,7 +21,7 @@ export default function ComposerPassportTabs({ works }: ComposerPassportTabsProp
   const [activeTab, setActiveTab] = useState<TabKey>("works");
 
   return (
-    <div className="mt-7">
+    <div id="composer-works" className="mt-7 scroll-mt-6">
       <div className="overflow-x-auto border-b border-black/10">
         <div className="flex min-w-max gap-8 px-1">
           {tabs.map((tab) => (
