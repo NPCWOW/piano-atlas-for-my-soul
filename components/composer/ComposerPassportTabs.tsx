@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { Work } from "@/types/music";
+import type { Composer, Work } from "@/types/music";
 
 type TabKey = "overview" | "works" | "journey" | "archive";
 
 type ComposerPassportTabsProps = {
+  composer: Composer;
   works: Work[];
+  hasJourney: boolean;
 };
 
 const tabs: Array<{ key: TabKey; label: string }> = [
@@ -17,8 +19,48 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "archive", label: "Архив" },
 ];
 
-export default function ComposerPassportTabs({ works }: ComposerPassportTabsProps) {
+const profiles = {
+  "sergei-rachmaninoff": {
+    headline: "Последний великий романтик и один из крупнейших пианистов своей эпохи.",
+    overview:
+      "В музыке Рахманинова соединяются широкая певучая мелодия, колокольность, сложная фортепианная фактура и исключительное чувство большого драматического дыхания.",
+    traits: ["певучесть", "колокольность", "монументальность", "ностальгия", "виртуозность", "широкая форма"],
+    quote: "«Музыка должна идти от сердца и быть обращена к сердцу».",
+    journeyTitle: "Жизнь Рахманинова как единая музыкальная сцена.",
+    journeyText:
+      "Нажмите на портрет композитора в верхней части паспорта. Откроется бесшовное путешествие от детства среди русской природы до последних лет.",
+    journeyBackground: "/images/journey/rachmaninoff-childhood.webp",
+  },
+  "wolfgang-amadeus-mozart": {
+    headline: "Музыкант, который прошёл путь от ребёнка-виртуоза до свободного венского автора.",
+    overview:
+      "В музыке Моцарта ясная классическая форма соединяется с театральностью, живой речью, неожиданными сменами настроения и редкой способностью превращать простую мелодию в полноценную драму.",
+    traits: ["ясность", "театр", "певучесть", "контраст", "изящество", "ритмическая энергия"],
+    quote: "«Мелодия — сущность музыки».",
+    journeyTitle: "Моцарт движется по сцене и взрослеет во время скролла.",
+    journeyText:
+      "Нажмите на большой портрет. Детский образ начнёт перемещаться по экрану и плавно сменится юношеским, взрослым и последним прижизненным портретом.",
+    journeyBackground:
+      "https://upload.wikimedia.org/wikipedia/commons/2/24/Portrait_of_Mozart_by_Pietro_Antonio_Lorenzoni.jpg",
+  },
+} as const;
+
+export default function ComposerPassportTabs({ composer, works, hasJourney }: ComposerPassportTabsProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("works");
+  const profile = profiles[composer.slug as keyof typeof profiles] ?? {
+    headline: composer.fullName.ru,
+    overview: composer.biography.ru,
+    traits: ["форма", "мелодия", "ритм", "характер"],
+    quote: "Музыка остаётся живой, пока её слушают и исполняют.",
+    journeyTitle: `Жизнь ${composer.name.ru} в музыке.`,
+    journeyText: "Интерактивная биография этого композитора пока создаётся.",
+    journeyBackground: composer.portrait ?? "",
+  };
+
+  const cardPortrait =
+    composer.slug === "sergei-rachmaninoff"
+      ? "/images/works/rachmaninoff-hero.jpg"
+      : composer.portrait ?? "";
 
   return (
     <div id="composer-works" className="mt-7 scroll-mt-6">
@@ -45,26 +87,20 @@ export default function ComposerPassportTabs({ works }: ComposerPassportTabsProp
         <section className="mt-5 grid gap-4 xl:grid-cols-[1.2fr_.8fr]">
           <article className="rounded-2xl border border-black/10 bg-white/60 p-7 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[.14em] text-[#9b7130]">Портрет композитора</p>
-            <h2 className="mt-5 max-w-2xl font-serif text-3xl leading-tight sm:text-4xl">
-              Последний великий романтик и один из крупнейших пианистов своей эпохи.
-            </h2>
-            <p className="mt-6 max-w-3xl text-sm leading-7 text-black/68 sm:text-base">
-              В музыке Рахманинова соединяются широкая певучая мелодия, колокольность, сложная фортепианная фактура и исключительное чувство большого драматического дыхания.
-            </p>
+            <h2 className="mt-5 max-w-2xl font-serif text-3xl leading-tight sm:text-4xl">{profile.headline}</h2>
+            <p className="mt-6 max-w-3xl text-sm leading-7 text-black/68 sm:text-base">{profile.overview}</p>
           </article>
 
           <article className="rounded-2xl border border-black/10 bg-[#1a2433] p-7 text-[#eee7da] shadow-sm">
             <p className="text-xs uppercase tracking-[.14em] text-[#d0ad69]">Музыкальный почерк</p>
             <div className="mt-6 flex flex-wrap gap-2">
-              {["певучесть", "колокольность", "монументальность", "ностальгия", "виртуозность", "широкая форма"].map((item) => (
+              {profile.traits.map((item) => (
                 <span key={item} className="rounded-full border border-white/15 bg-white/[.05] px-4 py-2 text-xs text-white/70">
                   {item}
                 </span>
               ))}
             </div>
-            <p className="mt-8 font-serif text-2xl leading-snug text-white/85">
-              «Музыка должна идти от сердца и быть обращена к сердцу».
-            </p>
+            <p className="mt-8 font-serif text-2xl leading-snug text-white/85">{profile.quote}</p>
           </article>
         </section>
       )}
@@ -79,22 +115,24 @@ export default function ComposerPassportTabs({ works }: ComposerPassportTabsProp
             >
               <div className="relative min-h-[260px] overflow-hidden bg-[#ded5c8]">
                 <div
-                  className="absolute inset-0 bg-cover bg-[68%_42%] grayscale transition duration-700 group-hover:scale-[1.035]"
-                  style={{ backgroundImage: "url('/images/works/rachmaninoff-hero.jpg')" }}
+                  className={`absolute inset-0 bg-cover grayscale transition duration-700 group-hover:scale-[1.035] ${
+                    composer.slug === "wolfgang-amadeus-mozart" ? "bg-[50%_16%] sepia-[.1]" : "bg-[68%_42%]"
+                  }`}
+                  style={{ backgroundImage: `url('${cardPortrait}')` }}
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,237,226,.98)_0%,rgba(244,237,226,.92)_37%,rgba(244,237,226,.18)_70%,rgba(10,9,8,.18)_100%)]" />
                 <div className="relative z-10 max-w-[64%] p-7 sm:p-9">
                   <p className="text-[10px] uppercase tracking-[.2em] text-[#9b7130]">Musical Passport · {work.passportNumber}</p>
                   <h3 className="mt-7 font-serif text-3xl leading-[.98] tracking-[-.025em] sm:text-4xl">{work.title.ru}</h3>
-                  <p className="mt-4 font-serif text-xl text-[#735426]">{work.opus}</p>
+                  <p className="mt-4 font-serif text-xl text-[#735426]">{work.opus ?? work.catalogue}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 border-t border-black/10 sm:grid-cols-4">
                 {[
                   ["Год", work.year],
-                  ["Тональность", work.key.ru],
-                  ["Длительность", work.duration],
+                  ["Тональность", work.key?.ru ?? "—"],
+                  ["Длительность", work.duration ?? "—"],
                   ["Сложность", `${work.difficulty} / 10`],
                 ].map(([label, value]) => (
                   <div key={label} className="min-h-20 border-b border-r border-black/10 p-4 sm:border-b-0">
@@ -122,13 +160,16 @@ export default function ComposerPassportTabs({ works }: ComposerPassportTabsProp
       {activeTab === "journey" && (
         <section className="mt-5 overflow-hidden rounded-[1.7rem] border border-black/10 bg-[#10100e] text-[#eee4cf] shadow-xl">
           <div className="relative min-h-[360px] p-8 sm:p-12">
-            <div className="absolute inset-0 bg-[url('/images/journey/rachmaninoff-childhood.webp')] bg-cover bg-center opacity-45" />
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-45"
+              style={{ backgroundImage: `url('${profile.journeyBackground}')` }}
+            />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,6,.98)_0%,rgba(7,7,6,.78)_48%,rgba(7,7,6,.18)_100%)]" />
             <div className="relative z-10 max-w-xl">
               <p className="text-[10px] uppercase tracking-[.28em] text-[#d1ad68]">Composer Journey</p>
-              <h2 className="mt-7 font-serif text-4xl leading-tight sm:text-5xl">Жизнь Рахманинова как единая музыкальная сцена.</h2>
+              <h2 className="mt-7 font-serif text-4xl leading-tight sm:text-5xl">{profile.journeyTitle}</h2>
               <p className="mt-6 text-sm leading-7 text-white/62 sm:text-base">
-                Нажмите на портрет композитора в верхней части паспорта. Откроется бесшовное путешествие от детства среди русской природы до последних лет.
+                {hasJourney ? profile.journeyText : "Интерактивная биография этого композитора пока создаётся."}
               </p>
             </div>
           </div>
@@ -138,9 +179,9 @@ export default function ComposerPassportTabs({ works }: ComposerPassportTabsProp
       {activeTab === "archive" && (
         <section className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {[
-            ["Фотографии", "Портреты, концертные снимки и семейный архив"],
+            ["Фотографии", "Портреты, концертные изображения и семейный архив"],
             ["Рукописи", "Черновики, авторские пометки и первые издания"],
-            ["Записи", "Авторское исполнение и исторические интерпретации"],
+            ["Записи", "Исторические интерпретации и связанные аудиоматериалы"],
           ].map(([title, description], index) => (
             <article key={title} className="rounded-2xl border border-black/10 bg-white/55 p-6">
               <span className="font-serif text-4xl text-[#b38a45]">0{index + 1}</span>
