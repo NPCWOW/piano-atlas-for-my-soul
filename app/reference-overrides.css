@@ -42,6 +42,13 @@
     max-width: 54% !important;
   }
 
+  main.lg\:pl-\[216px\] > section > div > header > button[aria-label="Открыть путешествие по жизни Сергея Рахманинова"] {
+    display: block !important;
+    z-index: 20 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
   /* The old bridge gradient created a visible vertical seam across the title. */
   main.lg\:pl-\[216px\] > section > div > header > div:last-child {
     display: none !important;
@@ -112,14 +119,16 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
     display: none !important;
   }
 
+  main > section > div > header > button[aria-label="Открыть путешествие по жизни Сергея Рахманинова"] {
+    display: block !important;
+    z-index: 20 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
   main > section > div > header > div:last-child {
     display: none !important;
   }
-}
-
-/* The interactive biography now belongs only to the composer passport. */
-main > section > div > header > button[aria-label="Открыть путешествие по жизни Сергея Рахманинова"] {
-  display: none !important;
 }
 
 /* Chapter III artwork. Several filenames are supported so a locally added PNG/JPG is picked up immediately. */
