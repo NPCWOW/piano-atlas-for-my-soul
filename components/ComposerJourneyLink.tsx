@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import ChildhoodScene from "@/components/journey/ChildhoodScene";
-import ConservatoryScene from "@/components/journey/ConservatoryScene";
 import JourneyChapterNav from "@/components/journey/JourneyChapterNav";
-import SceneTransition from "@/components/journey/SceneTransition";
+import SeamlessOpeningStage from "@/components/journey/SeamlessOpeningStage";
 
 type TrackKey = "forest" | "youth" | "triumph" | "ocean" | "america" | "finale";
 
@@ -123,6 +121,10 @@ export default function ComposerJourneyLink() {
 
   useEffect(() => setMounted(true), []);
 
+  const registerChapter = useCallback((index: number, element: HTMLElement | null) => {
+    chapterRefs.current[index] = element;
+  }, []);
+
   const clearTimers = () => {
     fadeTimers.current.forEach((timer) => window.clearInterval(timer));
     fadeTimers.current = [];
@@ -169,8 +171,8 @@ export default function ComposerJourneyLink() {
     });
   };
 
-  const playTrack = async (track: TrackKey) => {
-    if (!soundEnabled) return;
+  const playTrack = async (track: TrackKey, force = false) => {
+    if (!force && !soundEnabled) return;
     const next = audioRefs.current[track];
     if (!next) return;
 
@@ -184,7 +186,7 @@ export default function ComposerJourneyLink() {
       await next.play();
       fadeTo(next, track === "forest" || track === "ocean" ? 0.48 : 0.7);
     } catch {
-      // Audio files are optional during production.
+      // Audio files are optional while the journey is being assembled.
     }
   };
 
@@ -195,7 +197,7 @@ export default function ComposerJourneyLink() {
       return;
     }
     setSoundEnabled(true);
-    introTimer.current = window.setTimeout(() => void playTrack(activeTrack), 4500);
+    introTimer.current = window.setTimeout(() => void playTrack(activeTrack, true), 4500);
   };
 
   const closeJourney = () => {
@@ -230,14 +232,12 @@ export default function ComposerJourneyLink() {
     const start = root.scrollTop;
     const destination = Math.max(0, start + targetRect.top - rootRect.top);
     const distance = destination - start;
-    const duration = Math.min(1900, Math.max(1050, 950 + Math.abs(distance) * 0.24));
+    const duration = Math.min(2100, Math.max(1100, 980 + Math.abs(distance) * 0.22));
     const startedAt = performance.now();
 
     const move = (time: number) => {
-      const elapsed = time - startedAt;
-      const amount = Math.min(1, elapsed / duration);
+      const amount = Math.min(1, (time - startedAt) / duration);
       root.scrollTop = start + distance * easeInOutCubic(amount);
-
       if (amount < 1) {
         navigationAnimation.current = window.requestAnimationFrame(move);
       } else {
@@ -274,7 +274,6 @@ export default function ComposerJourneyLink() {
     const animateWheel = () => {
       const difference = wheelTarget.current - root.scrollTop;
       root.scrollTop += difference * 0.105;
-
       if (Math.abs(difference) > 0.55) {
         wheelAnimation.current = window.requestAnimationFrame(animateWheel);
       } else {
@@ -287,10 +286,8 @@ export default function ComposerJourneyLink() {
       if (event.ctrlKey || navigationAnimation.current !== null) return;
       event.preventDefault();
       const limit = Math.max(0, root.scrollHeight - root.clientHeight);
-      wheelTarget.current = Math.max(
-        0,
-        Math.min(limit, (wheelAnimation.current === null ? root.scrollTop : wheelTarget.current) + event.deltaY * 0.92),
-      );
+      const currentTarget = wheelAnimation.current === null ? root.scrollTop : wheelTarget.current;
+      wheelTarget.current = Math.max(0, Math.min(limit, currentTarget + event.deltaY * 0.92));
       if (wheelAnimation.current === null) {
         wheelAnimation.current = window.requestAnimationFrame(animateWheel);
       }
@@ -318,7 +315,7 @@ export default function ComposerJourneyLink() {
         setActiveChapter(index);
         setActiveTrack(chapter.track);
       },
-      { root: scrollRef.current, threshold: [0.3, 0.48, 0.66, 0.82] },
+      { root: scrollRef.current, threshold: [0.28, 0.45, 0.62, 0.76] },
     );
     chapterRefs.current.forEach((element) => element && observer.observe(element));
     return () => observer.disconnect();
@@ -326,7 +323,7 @@ export default function ComposerJourneyLink() {
 
   useEffect(() => {
     if (soundEnabled) void playTrack(activeTrack);
-  }, [activeTrack, soundEnabled]);
+  }, [activeTrack]);
 
   const updateProgress = () => {
     const element = scrollRef.current;
@@ -395,23 +392,13 @@ export default function ComposerJourneyLink() {
       >
         <section className="relative flex min-h-screen items-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 lg:px-20">
           <div
-            className={`absolute inset-0 bg-[url('/images/works/rachmaninoff-hero.jpg')] bg-cover bg-[68%_52%] grayscale transition-all duration-[1600ms] ease-out ${
-              visible ? "scale-110 opacity-80" : "scale-100 opacity-0"
-            }`}
+            className={`absolute inset-0 bg-[url('/images/works/rachmaninoff-hero.jpg')] bg-cover bg-[68%_52%] grayscale transition-all duration-[1600ms] ease-out ${visible ? "scale-110 opacity-80" : "scale-100 opacity-0"}`}
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_38%,transparent_0%,rgba(7,6,4,.15)_36%,rgba(7,6,4,.84)_100%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#090806] via-transparent to-black/45" />
-          <div
-            className={`relative z-10 max-w-4xl transition-all delay-300 duration-1000 ${
-              visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-            }`}
-          >
+          <div className={`relative z-10 max-w-4xl transition-all delay-300 duration-1000 ${visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
             <p className="mb-5 text-xs uppercase tracking-[.34em] text-[#c6a45e]">Piano Atlas · Composer Journey</p>
-            <h2 className="font-serif text-5xl leading-[.92] sm:text-7xl lg:text-8xl">
-              Сергей
-              <br />
-              Рахманинов
-            </h2>
+            <h2 className="font-serif text-5xl leading-[.92] sm:text-7xl lg:text-8xl">Сергей<br />Рахманинов</h2>
             <p className="mt-6 font-serif text-2xl text-white/65">1873—1943</p>
             <div className="mt-10 flex flex-wrap items-center gap-5">
               <span className="font-serif text-xl tracking-[.18em] text-[#d8bd82]">A LIFE IN MUSIC</span>
@@ -421,31 +408,10 @@ export default function ComposerJourneyLink() {
           </div>
         </section>
 
-        <ChildhoodScene
-          active={activeTrack === "forest"}
-          soundEnabled={soundEnabled}
-          registerRef={(element) => {
-            chapterRefs.current[0] = element;
-          }}
-        />
+        <SeamlessOpeningStage soundEnabled={soundEnabled} registerChapter={registerChapter} />
 
-        <SceneTransition
-          fromImage="/images/journey/rachmaninoff-childhood.webp"
-          toImage="/images/journey/rachmaninoff-conservatory.png"
-          fromPosition="center 82%"
-          toPosition="center 14%"
-        />
-
-        <ConservatoryScene
-          active={activeTrack === "youth"}
-          soundEnabled={soundEnabled}
-          registerRef={(element) => {
-            chapterRefs.current[1] = element;
-          }}
-        />
-
-        <section className="relative -mt-[8vh] bg-[#0d0b08] px-6 pb-24 pt-40 sm:px-12 lg:px-20">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-gradient-to-b from-[#171007] via-[#0d0b08]/90 to-transparent" />
+        <section className="relative bg-[#0d0b08] px-6 pb-24 pt-32 sm:px-12 lg:px-20">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#171007] via-[#0d0b08]/90 to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 left-[30px] w-px bg-gradient-to-b from-transparent via-[#b89455]/45 to-transparent sm:left-[55px] lg:left-[87px]" />
           <div className="mx-auto max-w-6xl space-y-24 sm:space-y-32">
             {chapters.slice(2).map((chapter, offset) => {
@@ -453,9 +419,7 @@ export default function ComposerJourneyLink() {
               return (
                 <article
                   key={chapter.year}
-                  ref={(element) => {
-                    chapterRefs.current[index] = element;
-                  }}
+                  ref={(element) => registerChapter(index, element)}
                   data-chapter-index={index}
                   className="relative grid min-h-[72vh] items-center gap-10 pl-12 sm:pl-20 lg:grid-cols-[180px_1fr] lg:pl-0"
                 >
@@ -464,19 +428,13 @@ export default function ComposerJourneyLink() {
                     <p className="font-serif text-5xl text-[#c8a96b] sm:text-6xl lg:text-right">{chapter.year}</p>
                   </div>
                   <div className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.035] p-7 shadow-2xl shadow-black/30 backdrop-blur transition duration-700 hover:-translate-y-1 hover:border-[#c3a15b]/30 sm:p-10">
-                    <div
-                      className={`absolute inset-0 opacity-35 transition duration-700 group-hover:scale-105 group-hover:opacity-50 ${chapterBackground[chapter.tone]}`}
-                    />
+                    <div className={`absolute inset-0 opacity-35 transition duration-700 group-hover:scale-105 group-hover:opacity-50 ${chapterBackground[chapter.tone]}`} />
                     <div className="relative z-10 max-w-2xl">
                       <p className="text-[10px] uppercase tracking-[.24em] text-[#b99658]">{chapter.label}</p>
                       <h3 className="mt-5 font-serif text-3xl sm:text-5xl">{chapter.title}</h3>
                       <p className="mt-6 max-w-xl text-sm leading-7 text-white/65 sm:text-base">{chapter.text}</p>
                       <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[10px] uppercase tracking-[.16em] text-white/50">
-                        <span
-                          className={`h-2 w-2 rounded-full ${
-                            activeTrack === chapter.track && soundEnabled ? "animate-pulse bg-[#d5b56e]" : "bg-white/20"
-                          }`}
-                        />
+                        <span className={`h-2 w-2 rounded-full ${activeTrack === chapter.track && soundEnabled ? "animate-pulse bg-[#d5b56e]" : "bg-white/20"}`} />
                         {chapter.soundLabel}
                       </div>
                     </div>
@@ -490,9 +448,7 @@ export default function ComposerJourneyLink() {
         <section className="flex min-h-[70vh] items-center justify-center bg-black px-6 py-24 text-center">
           <div>
             <p className="font-serif text-4xl text-white/90 sm:text-6xl">Но музыка не заканчивается.</p>
-            <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-white/45">
-              В финале все дорожки плавно затихают. Остаётся только память о последнем аккорде.
-            </p>
+            <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-white/45">В финале все дорожки плавно затихают. Остаётся только память о последнем аккорде.</p>
             <button
               type="button"
               onClick={closeJourney}
@@ -515,9 +471,7 @@ export default function ComposerJourneyLink() {
         className="group absolute inset-y-0 right-0 z-[15] w-[54%] cursor-pointer overflow-hidden rounded-r-[1.7rem] outline-none focus-visible:ring-2 focus-visible:ring-[#a67d35]"
       >
         <span className="absolute inset-6 rounded-[1.35rem] border border-white/0 transition duration-500 group-hover:border-white/25 group-hover:bg-white/[.025]" />
-        <span className="absolute bottom-11 right-8 hidden translate-y-3 rounded-full border border-white/30 bg-black/45 px-4 py-2 text-[10px] uppercase tracking-[.18em] text-white/90 opacity-0 shadow-lg backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
-          Нажмите на портрет · Жизнь в музыке
-        </span>
+        <span className="absolute bottom-11 right-8 hidden translate-y-3 rounded-full border border-white/30 bg-black/45 px-4 py-2 text-[10px] uppercase tracking-[.18em] text-white/90 opacity-0 shadow-lg backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">Нажмите на портрет · Жизнь в музыке</span>
       </button>
       {mounted && overlay ? createPortal(overlay, document.body) : null}
     </>
