@@ -33,8 +33,19 @@ const dust = Array.from({ length: 34 }, (_, index) => ({
   opacity: 0.16 + (index % 5) * 0.07,
 }));
 
+const stageDust = Array.from({ length: 30 }, (_, index) => ({
+  left: `${4 + ((index * 37) % 92)}%`,
+  top: `${8 + ((index * 43) % 82)}%`,
+  delay: `${-(index % 15) * 1.1}s`,
+  duration: `${9 + (index % 9) * 1.45}s`,
+  size: 1 + (index % 5) * 0.8,
+  drift: -22 + ((index * 19) % 44),
+  opacity: 0.12 + (index % 6) * 0.065,
+}));
+
 export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: SeamlessOpeningStageProps) {
   const trackRef = useRef<HTMLElement | null>(null);
+  const thirdMarkerRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
@@ -43,10 +54,16 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
     (element: HTMLDivElement | null) => registerChapter(0, element),
     [registerChapter],
   );
+
   const registerSecond = useCallback(
     (element: HTMLDivElement | null) => registerChapter(1, element),
     [registerChapter],
   );
+
+  useEffect(() => {
+    registerChapter(2, thirdMarkerRef.current);
+    return () => registerChapter(2, null);
+  }, [registerChapter]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -76,16 +93,30 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
     };
   }, []);
 
-  const forestExit = smoothstep(0.27, 0.64, progress);
-  const conservatoryIn = smoothstep(0.23, 0.68, progress);
-  const forestTextExit = smoothstep(0.15, 0.38, progress);
-  const conservatoryTextIn = smoothstep(0.59, 0.79, progress);
-  const transitionAmount = clamp((progress - 0.23) / 0.47);
-  const lightPulse = Math.sin(Math.PI * transitionAmount);
-  const reveal = 5 + conservatoryIn * 118;
-  const maskInner = Math.max(0, reveal - 24);
-  const maskMiddle = reveal;
-  const maskOuter = Math.min(145, reveal + 25);
+  const forestExit = smoothstep(0.14, 0.38, progress);
+  const conservatoryIn = smoothstep(0.12, 0.39, progress);
+  const conservatoryOut = smoothstep(0.58, 0.82, progress);
+  const portraitIn = smoothstep(0.58, 0.86, progress);
+
+  const forestTextExit = smoothstep(0.07, 0.23, progress);
+  const conservatoryTextIn = smoothstep(0.34, 0.46, progress);
+  const conservatoryTextOut = smoothstep(0.56, 0.7, progress);
+  const portraitTextIn = smoothstep(0.76, 0.9, progress);
+
+  const firstTransition = clamp((progress - 0.11) / 0.3);
+  const firstLightPulse = Math.sin(Math.PI * firstTransition);
+  const firstReveal = 4 + conservatoryIn * 120;
+  const firstMaskInner = Math.max(0, firstReveal - 24);
+  const firstMaskOuter = Math.min(148, firstReveal + 25);
+
+  const secondTransition = clamp((progress - 0.57) / 0.31);
+  const secondLightPulse = Math.sin(Math.PI * secondTransition);
+  const portraitReveal = 3 + portraitIn * 124;
+  const portraitMaskInner = Math.max(0, portraitReveal - 20);
+  const portraitMaskOuter = Math.min(150, portraitReveal + 28);
+
+  const conservatoryTextOpacity = conservatoryTextIn * (1 - conservatoryTextOut);
+  const conservatoryLayerOpacity = Math.min(1, conservatoryIn * 1.16) * (1 - conservatoryOut * 0.92);
 
   const movePointer = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -96,18 +127,24 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
   };
 
   return (
-    <section ref={trackRef} className="relative h-[270vh] bg-[#090806]">
+    <section ref={trackRef} className="seamless-opening-stage relative h-[420vh] bg-[#090806]">
       <div
         ref={registerFirst}
         data-chapter-index="0"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[135vh]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[140vh]"
       />
       <div
         ref={registerSecond}
         data-chapter-index="1"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-[135vh] h-[135vh]"
+        className="pointer-events-none absolute inset-x-0 top-[140vh] h-[140vh]"
+      />
+      <div
+        ref={thirdMarkerRef}
+        data-chapter-index="2"
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-[280vh] h-[140vh]"
       />
 
       <div
@@ -121,9 +158,25 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
             backgroundImage: "url('/images/journey/rachmaninoff-childhood.webp')",
             backgroundPosition: "center 78%",
             backgroundSize: "cover",
-            opacity: 1 - forestExit * 0.78,
-            filter: `blur(${forestExit * 3.2}px) saturate(${1 - forestExit * 0.24}) brightness(${1 - forestExit * 0.16})`,
-            transform: `translate3d(${pointer.x * -7}px, ${pointer.y * -4 - progress * 18}px, 0) scale(${1.035 + progress * 0.135})`,
+            opacity: 1 - forestExit * 0.94,
+            filter: `blur(${forestExit * 4}px) saturate(${1 - forestExit * 0.28}) brightness(${1 - forestExit * 0.2})`,
+            transform: `translate3d(${pointer.x * -7}px, ${pointer.y * -4 - progress * 15}px, 0) scale(${1.035 + Math.min(progress, 0.4) * 0.22})`,
+            transition: "transform 700ms cubic-bezier(.2,.7,.2,1)",
+          }}
+        />
+
+        <div
+          className="absolute inset-[-6%] will-change-transform"
+          style={{
+            backgroundImage: "url('/images/journey/rachmaninoff-conservatory.png')",
+            backgroundPosition: "center 46%",
+            backgroundSize: "cover",
+            opacity: conservatoryLayerOpacity,
+            filter: `blur(${conservatoryOut * 2.6}px) saturate(${0.82 + conservatoryIn * 0.18 - conservatoryOut * 0.18}) brightness(${0.9 + conservatoryIn * 0.1 - conservatoryOut * 0.14})`,
+            transformOrigin: "80% 58%",
+            transform: `translate3d(${pointer.x * -4 - conservatoryOut * 7}px, ${pointer.y * -2 + (1 - conservatoryIn) * 16 + conservatoryOut * 8}px, 0) scale(${1.13 - conservatoryIn * 0.1 + conservatoryOut * 0.58})`,
+            WebkitMaskImage: `radial-gradient(circle at 31% 38%, #000 0%, #000 ${firstMaskInner}%, rgba(0,0,0,.92) ${firstReveal}%, transparent ${firstMaskOuter}%)`,
+            maskImage: `radial-gradient(circle at 31% 38%, #000 0%, #000 ${firstMaskInner}%, rgba(0,0,0,.92) ${firstReveal}%, transparent ${firstMaskOuter}%)`,
             transition: "transform 700ms cubic-bezier(.2,.7,.2,1)",
           }}
         />
@@ -131,14 +184,14 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
         <div
           className="absolute inset-[-5%] will-change-transform"
           style={{
-            backgroundImage: "url('/images/journey/rachmaninoff-conservatory.png')",
-            backgroundPosition: "center 46%",
+            backgroundImage: "url('/images/works/rachmaninoff-hero.jpg')",
+            backgroundPosition: "68% 45%",
             backgroundSize: "cover",
-            opacity: Math.min(1, conservatoryIn * 1.16),
-            filter: `saturate(${0.82 + conservatoryIn * 0.18}) brightness(${0.9 + conservatoryIn * 0.1})`,
-            transform: `translate3d(${pointer.x * -4}px, ${pointer.y * -2 + (1 - conservatoryIn) * 16}px, 0) scale(${1.13 - conservatoryIn * 0.1})`,
-            WebkitMaskImage: `radial-gradient(circle at 31% 38%, #000 0%, #000 ${maskInner}%, rgba(0,0,0,.9) ${maskMiddle}%, transparent ${maskOuter}%)`,
-            maskImage: `radial-gradient(circle at 31% 38%, #000 0%, #000 ${maskInner}%, rgba(0,0,0,.9) ${maskMiddle}%, transparent ${maskOuter}%)`,
+            opacity: portraitIn,
+            filter: `sepia(${0.08 + portraitIn * 0.1}) grayscale(${0.22 - portraitIn * 0.12}) contrast(${1.03 + portraitIn * 0.04}) brightness(${0.82 + portraitIn * 0.12})`,
+            transform: `translate3d(${pointer.x * -4}px, ${pointer.y * -2 + (1 - portraitIn) * 18}px, 0) scale(${1.18 - portraitIn * 0.12})`,
+            WebkitMaskImage: `radial-gradient(circle at 80% 57%, #000 0%, #000 ${portraitMaskInner}%, rgba(0,0,0,.94) ${portraitReveal}%, transparent ${portraitMaskOuter}%)`,
+            maskImage: `radial-gradient(circle at 80% 57%, #000 0%, #000 ${portraitMaskInner}%, rgba(0,0,0,.94) ${portraitReveal}%, transparent ${portraitMaskOuter}%)`,
             transition: "transform 700ms cubic-bezier(.2,.7,.2,1)",
           }}
         />
@@ -146,25 +199,46 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
         <div
           className="absolute inset-0 mix-blend-screen"
           style={{
-            opacity: lightPulse * 0.82,
+            opacity: firstLightPulse * 0.82,
             background:
               "radial-gradient(circle at 31% 38%,rgba(255,246,218,.94) 0%,rgba(255,224,169,.46) 19%,rgba(245,215,165,.16) 38%,transparent 64%)",
-            filter: `blur(${10 + lightPulse * 12}px)`,
+            filter: `blur(${10 + firstLightPulse * 12}px)`,
+          }}
+        />
+
+        <div
+          className="absolute inset-0 mix-blend-screen"
+          style={{
+            opacity: secondLightPulse * 0.94,
+            background:
+              "radial-gradient(circle at 80% 57%,rgba(255,244,210,.98) 0%,rgba(224,176,91,.52) 15%,rgba(175,115,46,.2) 34%,transparent 61%)",
+            filter: `blur(${8 + secondLightPulse * 18}px)`,
           }}
         />
 
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(90deg,rgba(3,3,2,${0.84 - conservatoryIn * 0.22}) 0%,rgba(4,4,3,${0.48 - conservatoryIn * 0.12}) 30%,transparent 60%,rgba(3,2,2,.42) 100%)`,
+            opacity: portraitIn * 0.72,
+            background:
+              "repeating-linear-gradient(180deg,transparent 0px,transparent 34px,rgba(229,205,151,.1) 35px,transparent 36px)",
+            WebkitMaskImage: "linear-gradient(90deg,#000 0%,transparent 44%,transparent 100%)",
+            maskImage: "linear-gradient(90deg,#000 0%,transparent 44%,transparent 100%)",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/35" />
-        <div className="absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,.68)]" />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(90deg,rgba(3,3,2,${0.84 - conservatoryIn * 0.2 + portraitIn * 0.12}) 0%,rgba(4,4,3,${0.48 - conservatoryIn * 0.11 + portraitIn * 0.08}) 30%,transparent 60%,rgba(3,2,2,${0.42 + portraitIn * 0.12}) 100%)`,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-transparent to-black/38" />
+        <div className="absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,.7)]" />
 
         <div
           className="pointer-events-none absolute inset-0 overflow-hidden [perspective:700px]"
-          style={{ opacity: 1 - smoothstep(0.2, 0.52, progress) }}
+          style={{ opacity: 1 - smoothstep(0.12, 0.3, progress) }}
         >
           {leaves.map((leaf, index) => (
             <span
@@ -196,7 +270,7 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
 
         <div
           className="pointer-events-none absolute inset-0 overflow-hidden"
-          style={{ opacity: smoothstep(0.48, 0.76, progress) }}
+          style={{ opacity: smoothstep(0.3, 0.45, progress) * (1 - smoothstep(0.63, 0.82, progress)) }}
         >
           {dust.map((particle, index) => (
             <span
@@ -211,6 +285,30 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
                 animationDelay: particle.delay,
                 animationDuration: particle.duration,
               }}
+            />
+          ))}
+        </div>
+
+        <div
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+          style={{ opacity: smoothstep(0.67, 0.88, progress) }}
+        >
+          {stageDust.map((particle, index) => (
+            <span
+              key={index}
+              className="absolute animate-[seamlessStageDust_ease-in-out_infinite] rounded-full bg-[#e7c57d] shadow-[0_0_14px_rgba(223,181,99,.46)]"
+              style={
+                {
+                  left: particle.left,
+                  top: particle.top,
+                  width: `${particle.size}px`,
+                  height: `${particle.size}px`,
+                  opacity: particle.opacity,
+                  animationDelay: particle.delay,
+                  animationDuration: particle.duration,
+                  "--stage-drift": `${particle.drift}px`,
+                } as CSSProperties
+              }
             />
           ))}
         </div>
@@ -238,8 +336,8 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
         <div
           className="absolute inset-0 flex items-end justify-end px-7 pb-20 pt-24 sm:px-12 lg:px-20 xl:px-24"
           style={{
-            opacity: conservatoryTextIn,
-            transform: `translate3d(0,${(1 - conservatoryTextIn) * 46}px,0) scale(${0.97 + conservatoryTextIn * 0.03})`,
+            opacity: conservatoryTextOpacity,
+            transform: `translate3d(${conservatoryTextOut * -35}px,${(1 - conservatoryTextIn) * 46 - conservatoryTextOut * 18}px,0) scale(${0.97 + conservatoryTextIn * 0.03 - conservatoryTextOut * 0.025})`,
           }}
         >
           <div className="max-w-[660px] text-left">
@@ -255,7 +353,34 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-[9px] uppercase tracking-[.28em] text-white/42">
+        <div
+          className="absolute inset-0 flex items-end px-7 pb-20 pt-24 sm:px-12 lg:px-20 xl:px-24"
+          style={{
+            opacity: portraitTextIn,
+            transform: `translate3d(0,${(1 - portraitTextIn) * 52}px,0) scale(${0.965 + portraitTextIn * 0.035})`,
+          }}
+        >
+          <div className="max-w-[670px]">
+            <div className="mb-8 flex items-center gap-4 text-[10px] uppercase tracking-[.3em] text-[#d9b86f]">
+              <span>Глава III</span>
+              <span className="h-px w-16 bg-[#d2b16a]/45" />
+              <span>{soundEnabled ? "Музыка раскрывается полностью" : "Без звука"}</span>
+            </div>
+            <p className="font-serif text-[clamp(5.3rem,11.5vw,10rem)] leading-[.78] tracking-[-.055em] text-[#e5c984] drop-shadow-[0_8px_30px_rgba(0,0,0,.52)]">1892</p>
+            <p className="mt-8 text-[11px] uppercase tracking-[.38em] text-white/58">Москва · Первый большой успех</p>
+            <h3 className="mt-6 max-w-2xl font-serif text-4xl leading-[1.02] sm:text-6xl lg:text-7xl">Первый собственный голос</h3>
+            <p className="mt-7 max-w-xl text-[15px] leading-7 text-white/70 sm:text-[17px] sm:leading-8">После окончания Московской консерватории музыка впервые раскрывается полноценно. Прелюдия до-диез минор становится произведением, с которым публика запоминает его имя.</p>
+            <div className="mt-8 flex items-center gap-4 text-[10px] uppercase tracking-[.2em] text-[#dbc17f]/72">
+              <span className="h-px w-14 bg-[#d4b36b]/55" />
+              Op. 3 · Прелюдия до-диез минор
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-[9px] uppercase tracking-[.28em] text-white/42"
+          style={{ opacity: 1 - smoothstep(0.88, 0.98, progress) }}
+        >
           <span className="block">Прокрутите вниз</span>
           <span className="mx-auto mt-3 block h-8 w-px bg-gradient-to-b from-[#d2b16a]/70 to-transparent" />
         </div>
@@ -275,8 +400,19 @@ export default function SeamlessOpeningStage({ soundEnabled, registerChapter }: 
             0%,100% { transform: translate3d(0,12px,0) scale(.72); opacity: .08; }
             50% { transform: translate3d(15px,-28px,0) scale(1.08); opacity: .58; }
           }
+          @keyframes seamlessStageDust {
+            0%,100% { transform: translate3d(0,16px,0) scale(.7); opacity: .06; }
+            45% { transform: translate3d(calc(var(--stage-drift) * .55),-20px,0) scale(1.08); opacity: .52; }
+            75% { transform: translate3d(var(--stage-drift),-42px,0) scale(.88); opacity: .18; }
+          }
           @media (prefers-reduced-motion: reduce) {
             span, svg { animation: none !important; }
+          }
+        `}</style>
+
+        <style jsx global>{`
+          .seamless-opening-stage + section article:first-child {
+            display: none !important;
           }
         `}</style>
       </div>
