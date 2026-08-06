@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <AmbientMotion />
       </body>
