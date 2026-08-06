@@ -47,15 +47,6 @@ export default function ChildhoodScene({ active, soundEnabled, registerRef }: Ch
           </div>
         </div>
       </div>
-
-      <div className="pointer-events-none absolute right-7 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-5 text-[10px] uppercase tracking-[.2em] text-white/38 lg:flex">
-        {["I", "II", "III", "IV", "V", "VI"].map((label, index) => (
-          <div key={label} className="flex items-center gap-3">
-            <span className={`h-px ${index === 0 ? "w-7 bg-[#caa65d]" : "w-4 bg-white/16"}`} />
-            <span className={index === 0 ? "text-[#d9bd7c]" : "text-white/32"}>{label}</span>
-          </div>
-        ))}
-      </div>
     </JourneySceneEngine>
   );
 }
