@@ -117,6 +117,12 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   }
 }
 
+/* Chapter III uses its own 1892 artwork without changing the passport portrait. */
+.seamless-opening-stage [style*="rachmaninoff-hero.jpg"] {
+  background-image: url("/images/journeys/rachmaninoff-own-voice.jpg") !important;
+  background-position: center center !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pa-hover-card,
   main.lg\:pl-\[216px\] > section > div > header::after,
