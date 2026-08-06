@@ -117,6 +117,11 @@ main.lg\:pl-\[216px\] > section > div > section.mt-5 > article:nth-child(3) > di
   }
 }
 
+/* The interactive biography now belongs only to the composer passport. */
+main > section > div > header > button[aria-label="Открыть путешествие по жизни Сергея Рахманинова"] {
+  display: none !important;
+}
+
 /* Chapter III artwork. Several filenames are supported so a locally added PNG/JPG is picked up immediately. */
 .seamless-opening-stage > .sticky > div:nth-child(3),
 .seamless-opening-stage [style*="rachmaninoff-hero.jpg"] {
