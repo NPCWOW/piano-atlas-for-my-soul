@@ -31,7 +31,7 @@ export default async function ComposerPassportPage({
   const isRachmaninoff = composer.slug === "sergei-rachmaninoff";
   const heroPortrait = isRachmaninoff
     ? "/images/works/rachmaninoff-hero.jpg"
-    : composer.portrait;
+    : composer.portrait ?? "";
 
   const facts = [
     ["Родился", composer.born],
