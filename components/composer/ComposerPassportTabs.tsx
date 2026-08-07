@@ -10,6 +10,7 @@ import {
 } from "@/data/rachmaninoff-catalog";
 
 type TabKey = "biography" | "works" | "timeline" | "influence" | "quotes" | "places";
+type CatalogFilter = (typeof rachmaninoffCatalogGenres)[number] | "Концерты для фортепиано с оркестром";
 
 type Props = {
   composer: Composer;
@@ -24,6 +25,18 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: "influence", label: "Влияние" },
   { key: "quotes", label: "Цитаты" },
   { key: "places", label: "Места" },
+];
+
+const catalogFilters: CatalogFilter[] = [
+  "Все",
+  "Фортепиано",
+  "Концерты для фортепиано с оркестром",
+  "Два фортепиано",
+  "Камерная",
+  "Оркестровая",
+  "Вокальная",
+  "Хоровая",
+  "Опера",
 ];
 
 const profiles = {
@@ -155,7 +168,7 @@ function CatalogRow({ item }: { item: RachmaninoffCatalogItem }) {
 export default function ComposerPassportTabs({ composer, works, hasJourney }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>("biography");
   const [query, setQuery] = useState("");
-  const [catalogGenre, setCatalogGenre] = useState<(typeof rachmaninoffCatalogGenres)[number]>("Все");
+  const [catalogGenre, setCatalogGenre] = useState<CatalogFilter>("Все");
 
   const profile = profiles[composer.slug as keyof typeof profiles] ?? {
     headline: composer.fullName.ru,
@@ -173,7 +186,10 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
   const filteredRachmaninoffCatalog = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return rachmaninoffCatalog.filter((item) => {
-      const genreMatch = catalogGenre === "Все" || item.genre === catalogGenre;
+      const isPianoConcerto = /^Фортепианный концерт №[1-4]$/.test(item.title);
+      const genreMatch =
+        catalogGenre === "Все" ||
+        (catalogGenre === "Концерты для фортепиано с оркестром" ? isPianoConcerto : item.genre === catalogGenre);
       const queryMatch =
         !needle ||
         item.title.toLowerCase().includes(needle) ||
@@ -298,7 +314,7 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
                     />
                   </label>
                   <div className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:max-w-[62%]">
-                    {rachmaninoffCatalogGenres.map((genre) => (
+                    {catalogFilters.map((genre) => (
                       <button
                         key={genre}
                         type="button"
