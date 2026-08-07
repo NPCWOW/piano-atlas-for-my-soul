@@ -123,34 +123,34 @@ export default function MozartJourneyLink() {
 
   const figure = useMemo(() => {
     const x = interpolate(progress, [
-      [0, 69],
-      [0.18, 56],
-      [0.36, 72],
-      [0.56, 45],
-      [0.76, 64],
-      [1, 50],
+      [0, 68],
+      [0.18, 57],
+      [0.36, 69],
+      [0.56, 48],
+      [0.76, 62],
+      [1, 52],
     ]);
     const y = interpolate(progress, [
-      [0, 53],
-      [0.2, 47],
+      [0, 55],
+      [0.2, 52],
       [0.42, 54],
-      [0.63, 46],
-      [0.82, 51],
-      [1, 49],
+      [0.63, 51],
+      [0.82, 53],
+      [1, 52],
     ]);
     const scale = interpolate(progress, [
-      [0, 0.78],
-      [0.2, 0.94],
-      [0.42, 1.06],
-      [0.66, 1.2],
-      [0.84, 1.34],
-      [1, 1.48],
+      [0, 0.72],
+      [0.2, 0.82],
+      [0.42, 0.9],
+      [0.66, 1],
+      [0.84, 1.06],
+      [1, 1.1],
     ]);
     const rotate = interpolate(progress, [
-      [0, -4],
-      [0.25, 2],
-      [0.48, -2],
-      [0.72, 3],
+      [0, -3],
+      [0.25, 1.5],
+      [0.48, -1.5],
+      [0.72, 2],
       [1, -1],
     ]);
     return { x, y, scale, rotate };
@@ -252,11 +252,12 @@ export default function MozartJourneyLink() {
             </div>
 
             <div
-              className="absolute z-20 h-[88vh] w-[46vw] min-w-[330px] max-w-[720px] -translate-x-1/2 -translate-y-1/2 will-change-transform"
+              className="absolute z-20 h-[68vh] min-h-[430px] max-h-[650px] w-[40vw] min-w-[320px] max-w-[640px] will-change-transform"
               style={{
                 left: `${figure.x}%`,
                 top: `${figure.y}%`,
                 transform: `translate(-50%, -50%) scale(${figure.scale}) rotate(${figure.rotate}deg)`,
+                transformOrigin: "50% 50%",
               }}
             >
               <div
@@ -299,24 +300,24 @@ export default function MozartJourneyLink() {
               {chapters.map((chapter, index) => {
                 const center = index / (chapters.length - 1);
                 const opacity = clamp(1 - Math.abs(progress - center) / 0.14);
-                const move = (progress - center) * -90;
+                const move = (progress - center) * -58;
                 const isRight = index % 2 === 1;
                 return (
                   <article
                     key={chapter.year}
-                    className={`absolute top-1/2 w-[min(560px,78vw)] -translate-y-1/2 ${isRight ? "right-[9%] text-right" : "left-[7%]"}`}
+                    className={`absolute top-1/2 w-[min(500px,68vw)] ${isRight ? "right-[9%] text-right" : "left-[7%]"}`}
                     style={{ opacity, transform: `translateY(calc(-50% + ${move}px))` }}
                   >
                     <p className="text-[10px] uppercase tracking-[.3em]" style={{ color: chapter.accent }}>
                       {chapter.kicker}
                     </p>
-                    <p className="mt-5 font-serif text-[clamp(4.8rem,10vw,9rem)] leading-[.72] text-white/14">
+                    <p className="mt-4 font-serif text-[clamp(4rem,8vw,7rem)] leading-[.78] text-white/14">
                       {chapter.year}
                     </p>
-                    <h2 className="mt-5 font-serif text-[clamp(2.2rem,4.2vw,4.8rem)] leading-[.94] tracking-[-.035em] text-[#f3ead8]">
+                    <h2 className="mt-4 font-serif text-[clamp(2rem,3.7vw,4rem)] leading-[.95] tracking-[-.035em] text-[#f3ead8]">
                       {chapter.title}
                     </h2>
-                    <p className={`mt-7 text-sm leading-7 text-white/58 sm:text-base ${isRight ? "ml-auto" : ""} max-w-lg`}>
+                    <p className={`mt-5 text-sm leading-6 text-white/58 sm:text-base sm:leading-7 ${isRight ? "ml-auto" : ""} max-w-lg`}>
                       {chapter.text}
                     </p>
                   </article>
