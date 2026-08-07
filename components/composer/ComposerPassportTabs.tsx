@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Composer, Work } from "@/types/music";
+import {
+  rachmaninoffCatalog,
+  rachmaninoffCatalogGenres,
+  type RachmaninoffCatalogItem,
+} from "@/data/rachmaninoff-catalog";
 
 type TabKey = "biography" | "works" | "timeline" | "influence" | "quotes" | "places";
 
@@ -44,28 +49,15 @@ const profiles = {
   },
 } as const;
 
-export default function ComposerPassportTabs({ composer, works, hasJourney }: Props) {
-  const [activeTab, setActiveTab] = useState<TabKey>("biography");
-  const profile = profiles[composer.slug as keyof typeof profiles] ?? {
-    headline: composer.fullName.ru,
-    overview: composer.biography.ru,
-    traits: ["форма", "мелодия", "ритм", "характер"],
-    quote: "Музыка остаётся живой, пока её слушают и исполняют.",
-    influence: "Музыкальная среда эпохи, школа, исполнители и собственный художественный опыт.",
-    places: [composer.country.ru],
-  };
-
-  const portrait = composer.slug === "sergei-rachmaninoff" ? "/images/works/rachmaninoff-hero.jpg" : composer.portrait ?? "";
-  const popularWorks = works.slice(0, 4);
-
-  const WorkCard = ({ work, detailed = false }: { work: Work; detailed?: boolean }) => (
-    <article className="group overflow-hidden rounded-lg border border-black/10 bg-[#f3eee5] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(62,45,18,.10)]">
-      <div className={`${detailed ? "h-52" : "h-40"} relative overflow-hidden bg-[#ded6ca]`}>
+function ReadyWorkCard({ work, portrait, detailed = false }: { work: Work; portrait: string; detailed?: boolean }) {
+  return (
+    <article className="group overflow-hidden rounded-2xl border border-black/10 bg-[#fffdf8] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className={`${detailed ? "h-48" : "h-40"} relative overflow-hidden bg-[#ded6ca]`}>
         <div
           className="absolute inset-0 bg-cover bg-top grayscale transition duration-700 group-hover:scale-[1.035]"
           style={{ backgroundImage: `url('${portrait}')` }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,12,9,.04),rgba(12,10,8,.78))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,12,9,.05),rgba(12,10,8,.80))]" />
         <div className="absolute inset-x-0 bottom-0 p-4 text-[#f7f0e4]">
           <p className="text-[8px] uppercase tracking-[.14em] text-[#d7b977]">{work.year} · {work.passportNumber}</p>
           <h3 className="mt-2 font-serif text-lg leading-[1.02] sm:text-xl">{work.title.ru}</h3>
@@ -89,7 +81,7 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
           </div>
           <div className="p-3">
             <small className="block text-[8px] uppercase tracking-[.1em] text-black/36">Ноты</small>
-            <strong className="mt-1 block font-serif font-medium text-[#8b6324]">Открыть</strong>
+            <strong className="mt-1 block font-serif font-medium text-[#8b6324]">Доступны</strong>
           </div>
         </div>
       )}
@@ -98,22 +90,112 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
         href={`/works/${work.slug}`}
         className="flex items-center justify-between border-t border-black/10 px-4 py-3 text-[9px] uppercase tracking-[.11em] text-[#8b6324]"
       >
-        Паспорт произведения <span>→</span>
+        Открыть паспорт <span>→</span>
       </Link>
     </article>
   );
+}
+
+function CatalogRow({ item }: { item: RachmaninoffCatalogItem }) {
+  const body = (
+    <>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h3 className="font-serif text-[17px] leading-5 text-[#2a241d]">{item.title}</h3>
+          {item.opus && <span className="text-[10px] font-medium uppercase tracking-[.11em] text-[#9b7130]">{item.opus}</span>}
+        </div>
+        {item.group && <p className="mt-1 text-[10px] text-black/38">{item.group}</p>}
+        {item.note && <p className="mt-2 text-[10px] leading-4 text-[#8a6430]">{item.note}</p>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-xs sm:grid-cols-4 lg:grid-cols-5">
+        <div>
+          <small className="block text-[7px] uppercase tracking-[.12em] text-black/32">Год</small>
+          <span className="mt-1 block text-black/62">{item.year}</span>
+        </div>
+        <div>
+          <small className="block text-[7px] uppercase tracking-[.12em] text-black/32">Жанр</small>
+          <span className="mt-1 block text-black/62">{item.genre}</span>
+        </div>
+        <div>
+          <small className="block text-[7px] uppercase tracking-[.12em] text-black/32">Тональность</small>
+          <span className="mt-1 block text-black/62">{item.key ?? "—"}</span>
+        </div>
+        <div>
+          <small className="block text-[7px] uppercase tracking-[.12em] text-black/32">Сложность</small>
+          <span className="mt-1 block text-black/62">{item.difficulty ? `${item.difficulty} / 10` : "—"}</span>
+        </div>
+        <div className="hidden lg:block">
+          <small className="block text-[7px] uppercase tracking-[.12em] text-black/32">Состав</small>
+          <span className="mt-1 block text-black/62">{item.scoring ?? "—"}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 border-t border-black/[.07] pt-3 text-[9px] uppercase tracking-[.1em] sm:border-0 sm:pt-0">
+        <span className={item.passportSlug ? "text-[#8b6324]" : "text-black/30"}>
+          {item.passportSlug ? "Паспорт готов" : "Паспорт готовится"}
+        </span>
+        <span className="text-[#9b7130]">{item.passportSlug ? "Открыть →" : "Ноты · каталог"}</span>
+      </div>
+    </>
+  );
+
+  const className =
+    "grid gap-4 border-b border-black/[.08] px-1 py-5 transition sm:grid-cols-[1.05fr_1.2fr_auto] sm:items-center sm:gap-7 hover:bg-black/[.018]";
+
+  return item.passportSlug ? (
+    <Link href={`/works/${item.passportSlug}`} className={className}>
+      {body}
+    </Link>
+  ) : (
+    <article className={className}>{body}</article>
+  );
+}
+
+export default function ComposerPassportTabs({ composer, works, hasJourney }: Props) {
+  const [activeTab, setActiveTab] = useState<TabKey>("biography");
+  const [query, setQuery] = useState("");
+  const [catalogGenre, setCatalogGenre] = useState<(typeof rachmaninoffCatalogGenres)[number]>("Все");
+
+  const profile = profiles[composer.slug as keyof typeof profiles] ?? {
+    headline: composer.fullName.ru,
+    overview: composer.biography.ru,
+    traits: ["форма", "мелодия", "ритм", "характер"],
+    quote: "Музыка остаётся живой, пока её слушают и исполняют.",
+    influence: "Музыкальная среда эпохи, школа, исполнители и собственный художественный опыт.",
+    places: [composer.country.ru],
+  };
+
+  const isRachmaninoff = composer.slug === "sergei-rachmaninoff";
+  const portrait = isRachmaninoff ? "/images/works/rachmaninoff-hero.jpg" : composer.portrait ?? "";
+  const popularWorks = works.slice(0, 4);
+
+  const filteredRachmaninoffCatalog = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return rachmaninoffCatalog.filter((item) => {
+      const genreMatch = catalogGenre === "Все" || item.genre === catalogGenre;
+      const queryMatch =
+        !needle ||
+        item.title.toLowerCase().includes(needle) ||
+        item.opus?.toLowerCase().includes(needle) ||
+        item.group?.toLowerCase().includes(needle) ||
+        item.key?.toLowerCase().includes(needle) ||
+        item.year.toLowerCase().includes(needle);
+      return genreMatch && Boolean(queryMatch);
+    });
+  }, [catalogGenre, query]);
 
   return (
     <section id="composer-works" className="scroll-mt-6">
       <div className="overflow-x-auto border-b border-black/10">
-        <div className="flex min-w-max gap-7 sm:gap-10">
+        <div className="flex min-w-max gap-7 px-1">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`relative py-4 text-[10px] transition ${
-                activeTab === tab.key ? "font-semibold text-[#7e5b23]" : "text-black/48 hover:text-black/72"
+              className={`relative pb-3 text-[11px] uppercase tracking-[.06em] transition ${
+                activeTab === tab.key ? "text-[#8b6324]" : "text-black/52 hover:text-black/72"
               }`}
             >
               {tab.label}
@@ -125,68 +207,128 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
 
       {activeTab === "biography" && (
         <div className="pt-6">
-          <div className="grid gap-8 lg:grid-cols-[30%_70%]">
-            <article className="pr-6 lg:border-r lg:border-black/10">
-              <p className="text-[10px] uppercase tracking-[.16em] text-[#9b7130]">Биография</p>
-              <p className="mt-4 text-sm leading-6 text-black/62">{profile.overview}</p>
-              <Link href="/timeline" className="mt-5 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.08em] text-[#8b6324]">
-                Читать биографию <span>→</span>
+          <div className="grid gap-4 xl:grid-cols-[1.1fr_.9fr_1fr]">
+            <article className="rounded-2xl border border-black/10 bg-white/55 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[.12em] text-[#9b7130]">Биография</p>
+              <h2 className="mt-4 font-serif text-2xl leading-tight">{profile.headline}</h2>
+              <p className="mt-5 text-sm leading-6 text-black/67">{profile.overview}</p>
+              <Link href="/timeline" className="mt-5 inline-block text-[10px] uppercase tracking-[.08em] text-[#8b6324]">
+                Общая хронология →
               </Link>
             </article>
 
-            <div>
-              <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
-                <div>
-                  <small className="text-[8px] uppercase tracking-[.12em] text-black/36">Страна</small>
-                  <p className="mt-2 font-serif text-lg">{composer.country.ru}</p>
-                </div>
-                <div>
-                  <small className="text-[8px] uppercase tracking-[.12em] text-black/36">Период</small>
-                  <p className="mt-2 font-serif text-lg">{composer.born}—{composer.died}</p>
-                </div>
-                <div>
-                  <small className="text-[8px] uppercase tracking-[.12em] text-black/36">Произведений в атласе</small>
-                  <p className="mt-2 font-serif text-lg">{works.length}</p>
-                </div>
+            <article className="rounded-2xl border border-black/10 bg-white/55 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[.12em] text-[#9b7130]">Музыкальный почерк</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {profile.traits.map((trait) => (
+                  <span key={trait} className="rounded-full border border-black/10 px-3 py-2 text-xs text-black/62">{trait}</span>
+                ))}
               </div>
+              <blockquote className="mt-7 font-serif text-xl italic leading-7 text-[#6e5124]">{profile.quote}</blockquote>
+            </article>
 
-              <div className="mt-7 border-t border-black/10 pt-5">
-                <small className="text-[8px] uppercase tracking-[.12em] text-black/36">Музыкальный почерк</small>
-                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-                  {profile.traits.map((trait) => (
-                    <span key={trait} className="font-serif text-sm text-[#765626]">{trait}</span>
-                  ))}
-                </div>
+            <article className="rounded-2xl border border-black/10 bg-white/55 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[.12em] text-[#9b7130]">В атласе</p>
+              <div className="mt-5 space-y-4 text-sm">
+                <div className="flex justify-between border-b border-black/[.07] pb-3"><span className="text-black/48">Полный каталог</span><strong className="font-serif font-medium">{isRachmaninoff ? rachmaninoffCatalog.length : works.length}</strong></div>
+                <div className="flex justify-between border-b border-black/[.07] pb-3"><span className="text-black/48">Паспорта готовы</span><strong className="font-serif font-medium">{works.length}</strong></div>
+                <div className="flex justify-between"><span className="text-black/48">Страна</span><strong className="font-serif font-medium">{composer.country.ru}</strong></div>
               </div>
-            </div>
+            </article>
           </div>
 
-          <div className="mt-8 border-t border-black/10 pt-6">
-            <div className="mb-4 flex items-center justify-between gap-5">
-              <h2 className="font-serif text-2xl">Популярные произведения</h2>
-              <button type="button" onClick={() => setActiveTab("works")} className="text-[9px] uppercase tracking-[.1em] text-[#8b6324]">
-                Все произведения →
-              </button>
+          {popularWorks.length > 0 && (
+            <div className="mt-6">
+              <div className="mb-4 flex items-center justify-between gap-5">
+                <h2 className="font-serif text-2xl">Музыкальные паспорта</h2>
+                <button type="button" onClick={() => setActiveTab("works")} className="text-[9px] uppercase tracking-[.1em] text-[#8b6324]">
+                  Все произведения →
+                </button>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {popularWorks.map((work) => <ReadyWorkCard key={work.id} work={work} portrait={portrait} />)}
+              </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {popularWorks.map((work) => <WorkCard key={work.id} work={work} />)}
-            </div>
-          </div>
+          )}
         </div>
       )}
 
       {activeTab === "works" && (
         <div className="pt-6">
-          <div className="mb-5 flex items-end justify-between gap-5">
-            <div>
-              <p className="text-[9px] uppercase tracking-[.16em] text-[#9b7130]">Каталог</p>
-              <h2 className="mt-1 font-serif text-3xl">Произведения</h2>
-            </div>
-            <span className="text-[10px] text-black/40">{works.length} в атласе</span>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {works.map((work) => <WorkCard key={work.id} work={work} detailed />)}
-          </div>
+          {works.length > 0 && (
+            <section>
+              <div className="mb-5 flex items-end justify-between gap-5">
+                <div>
+                  <p className="text-[9px] uppercase tracking-[.16em] text-[#9b7130]">Готовые страницы</p>
+                  <h2 className="mt-1 font-serif text-3xl">Музыкальные паспорта</h2>
+                </div>
+                <span className="text-[10px] text-black/40">{works.length}</span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {works.map((work) => <ReadyWorkCard key={work.id} work={work} portrait={portrait} detailed />)}
+              </div>
+            </section>
+          )}
+
+          {isRachmaninoff && (
+            <section className="mt-9 border-t border-black/10 pt-7">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-[9px] uppercase tracking-[.16em] text-[#9b7130]">Полный указатель</p>
+                  <h2 className="mt-1 font-serif text-3xl">Все произведения Рахманинова</h2>
+                  <p className="mt-2 max-w-2xl text-xs leading-5 text-black/45">
+                    Opus, отдельные пьесы внутри циклов, ранние сочинения без opus, камерные, вокальные, хоровые, оркестровые и сценические работы.
+                  </p>
+                </div>
+                <div className="text-right">
+                  <strong className="font-serif text-3xl font-normal text-[#7a5926]">{filteredRachmaninoffCatalog.length}</strong>
+                  <small className="ml-2 text-[9px] uppercase tracking-[.1em] text-black/35">показано</small>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-black/10 bg-white/45 p-4">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                  <label className="relative flex-1">
+                    <span className="sr-only">Поиск произведения</span>
+                    <input
+                      value={query}
+                      onChange={(event) => setQuery(event.target.value)}
+                      placeholder="Поиск: название, Op. 23, соль минор, 1910…"
+                      className="h-11 w-full rounded-xl border border-black/10 bg-[#fffdf8] px-4 text-sm outline-none transition placeholder:text-black/28 focus:border-[#a67d35]/55"
+                    />
+                  </label>
+                  <div className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:max-w-[62%]">
+                    {rachmaninoffCatalogGenres.map((genre) => (
+                      <button
+                        key={genre}
+                        type="button"
+                        onClick={() => setCatalogGenre(genre)}
+                        className={`shrink-0 rounded-full border px-3 py-2 text-[9px] uppercase tracking-[.08em] transition ${
+                          catalogGenre === genre
+                            ? "border-[#a67d35] bg-[#a67d35] text-white"
+                            : "border-black/10 bg-[#fffdf8] text-black/50 hover:border-[#a67d35]/45"
+                        }`}
+                      >
+                        {genre}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 border-t border-black/[.08]">
+                {filteredRachmaninoffCatalog.map((item) => <CatalogRow key={item.id} item={item} />)}
+              </div>
+
+              {filteredRachmaninoffCatalog.length === 0 && (
+                <div className="py-14 text-center text-sm text-black/42">По этому запросу ничего не найдено.</div>
+              )}
+            </section>
+          )}
+
+          {!isRachmaninoff && works.length === 0 && (
+            <div className="py-14 text-center text-sm text-black/42">Каталог произведений пока наполняется.</div>
+          )}
         </div>
       )}
 
@@ -235,8 +377,8 @@ export default function ComposerPassportTabs({ composer, works, hasJourney }: Pr
           {profile.places.map((place, index) => (
             <article key={place} className="border-b border-r border-black/10 p-5">
               <span className="font-serif text-2xl text-[#a67d35]/45">{String(index + 1).padStart(2, "0")}</span>
-              <h3 className="mt-4 font-serif text-xl">{place}</h3>
-              <p className="mt-2 text-xs leading-5 text-black/46">Важная точка в биографии и музыкальной географии композитора.</p>
+              <h3 className="mt-3 font-serif text-xl">{place}</h3>
+              <p className="mt-2 text-xs leading-5 text-black/45">Важная точка в биографии и музыкальной географии композитора.</p>
             </article>
           ))}
         </div>
