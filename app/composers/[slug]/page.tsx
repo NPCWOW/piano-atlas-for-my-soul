@@ -3,13 +3,21 @@ import { notFound } from "next/navigation";
 import ComposerJourneyLink from "@/components/ComposerJourneyLink";
 import MozartJourneyLink from "@/components/MozartJourneyLink";
 import ComposerPassportTabs from "@/components/composer/ComposerPassportTabs";
-import PrimaryNav from "@/components/PrimaryNav";
 import { composers, getComposerBySlug } from "@/data/composers";
 import { getWorksByComposerId } from "@/data/catalog";
 
 export function generateStaticParams() {
   return composers.map((composer) => ({ slug: composer.slug }));
 }
+
+const navItems = [
+  { icon: "⌑", label: "Атлас", href: "/atlas" },
+  { icon: "♙", label: "Композиторы", href: "/composers" },
+  { icon: "♫", label: "Произведения", href: "/works" },
+  { icon: "◇", label: "Коллекции", href: "/#collections" },
+  { icon: "▣", label: "Моя библиотека", href: "/#library" },
+  { icon: "⌕", label: "Поиск", href: "/#search" },
+];
 
 export default async function ComposerPassportPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -24,6 +32,7 @@ export default async function ComposerPassportPage({ params }: { params: Promise
 
   const profile = isRachmaninoff
     ? {
+        code: "PA-COMP-RACH-0001",
         era: "Поздний романтизм",
         quote: "«Музыка должна идти от сердца и быть обращена к сердцу».",
         roles: "Композитор · пианист · дирижёр",
@@ -33,6 +42,7 @@ export default async function ComposerPassportPage({ params }: { params: Promise
         genres: "Прелюдии, этюды, концерты, симфонии, романсы",
       }
     : {
+        code: "PA-COMP-MOZ-0001",
         era: "Венский классицизм",
         quote: "«Мелодия — сущность музыки».",
         roles: "Композитор · пианист · капельмейстер",
@@ -42,7 +52,11 @@ export default async function ComposerPassportPage({ params }: { params: Promise
         genres: "Сонаты, концерты, симфонии, оперы, камерная музыка",
       };
 
-  const stats = [
+  const facts = [
+    ["Родился", composer.born],
+    ["Умер", composer.died ?? "—"],
+    ["Страна", composer.country.ru],
+    ["Эпоха", profile.era],
     ["Произведения", profile.works],
     ["Фортепианные", profile.pianoWorks],
     ["Публикации", profile.published],
@@ -50,83 +64,159 @@ export default async function ComposerPassportPage({ params }: { params: Promise
   ];
 
   return (
-    <main className="min-h-screen bg-[#f8f4ed] text-[#171714]">
-      <div className="mx-auto min-h-screen max-w-[1500px] border-x border-black/[.045] bg-[#fbf8f2] shadow-[0_20px_70px_rgba(67,48,18,.06)]">
-        <PrimaryNav active="Композиторы" />
+    <main className="min-h-screen bg-[#f6f2ea] text-[#171714] lg:pl-[216px] lg:pr-[310px]">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[216px] border-r border-black/10 bg-[#fbf8f2] px-4 py-7 lg:flex lg:flex-col">
+        <Link href="/" className="mb-10 text-center">
+          <span className="block font-serif text-5xl leading-none text-[#a67d35]">LV</span>
+          <strong className="mt-3 block font-serif text-lg font-medium tracking-[.08em]">PIANO ATLAS</strong>
+          <small className="font-serif italic text-black/50">for my soul</small>
+        </Link>
 
-        <section className="relative overflow-hidden border-b border-black/10">
-          <div className="relative min-h-[430px] sm:min-h-[470px] lg:min-h-[505px]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(255,255,255,.98),transparent_38%)]" />
-
-            <div
-              className={`absolute bottom-0 right-0 h-[96%] w-[58%] bg-contain bg-bottom bg-no-repeat grayscale contrast-[1.08] ${
-                isMozart ? "sepia-[.10]" : ""
+        <nav className="space-y-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center gap-4 rounded-xl px-4 py-3 text-sm transition ${
+                item.label === "Композиторы"
+                  ? "bg-[#eee6d8] text-[#8c6424]"
+                  : "text-black/72 hover:bg-black/[.035]"
               }`}
-              style={{ backgroundImage: `url('${portrait}')` }}
-            />
-            <div className="absolute inset-y-0 left-[38%] w-[31%] bg-gradient-to-r from-[#fbf8f2] via-[#fbf8f2]/92 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#fbf8f2] via-[#fbf8f2]/62 to-transparent" />
+            >
+              <span className="w-5 text-center text-lg text-[#8c6424]">{item.icon}</span>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
-            <div className="relative z-10 px-7 pb-24 pt-7 sm:px-10 lg:px-14">
-              <div className="flex items-center gap-3 text-[10px] text-black/46">
-                <Link href="/composers" className="transition hover:text-[#8b6324]">← Композиторы</Link>
-                <span className="text-black/20">•</span>
-                <span>{profile.era}</span>
-              </div>
+        <div className="mt-auto">
+          <div className="mb-5 flex items-center justify-between px-3 text-xs text-black/55">
+            <span>RU⌄</span>
+            <span>◔</span>
+          </div>
+          <div className="flex items-center gap-3 rounded-xl bg-black/[.035] p-2">
+            <img src={portrait} alt="" className="h-11 w-11 rounded-full object-cover object-top grayscale" />
+            <span className="text-xs text-black/62">Паспорт<br />композитора</span>
+          </div>
+        </div>
+      </aside>
 
-              <div className="mt-14 max-w-[49%] sm:mt-16 lg:mt-20">
-                <h1 className="font-serif text-[clamp(2.8rem,5vw,5.4rem)] leading-[.92] tracking-[-.045em]">
-                  {composer.fullName.ru}
-                </h1>
-                <p className="mt-5 font-serif text-xl text-black/48 sm:text-2xl">
-                  {composer.born} — {composer.died}
-                </p>
-                <p className="mt-7 max-w-sm font-serif text-[clamp(1.05rem,1.55vw,1.4rem)] italic leading-7 text-[#8b6324] sm:leading-8">
-                  {profile.quote}
-                </p>
-                <div className="mt-6 h-px w-16 bg-[#a67d35]" />
-              </div>
+      <section className="min-h-screen px-4 pb-28 pt-5 sm:px-6 lg:px-7 lg:pb-10">
+        <div className="mx-auto max-w-[1100px]">
+          <div className="mb-5 flex items-center justify-between text-xs text-black/45">
+            <div className="hidden items-center gap-3 md:flex">
+              <Link href="/">Главная</Link>
+              <span>›</span>
+              <Link href="/composers">Композиторы</Link>
+              <span>›</span>
+              <strong className="font-medium text-black/70">{composer.name.ru}</strong>
+            </div>
+            <Link href="/composers" className="md:hidden">← Назад</Link>
+            <div className="flex gap-2">
+              <button className="grid h-9 w-9 place-items-center rounded-full border border-black/10 bg-white/60 text-[#946b28]">♡</button>
+              <button className="grid h-9 w-9 place-items-center rounded-full border border-black/10 bg-white/60">⋮</button>
+            </div>
+          </div>
+
+          <header className="relative min-h-[330px] overflow-hidden rounded-[1.7rem] border border-black/10 bg-[#e8e0d4] shadow-[0_20px_60px_rgba(60,45,20,.08)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_22%,rgba(255,255,255,.96),transparent_42%)]" />
+            <div className="relative z-10 max-w-[58%] px-7 py-10 sm:px-10 sm:py-12">
+              <p className="mb-5 text-xs uppercase tracking-[.24em] text-[#9b7130]">
+                Composer Passport · {profile.code}
+              </p>
+              <h1 className="font-serif text-4xl leading-[.98] tracking-[-.035em] sm:text-6xl">
+                {composer.fullName.ru}
+              </h1>
+              <p className="mt-5 font-serif text-lg text-black/55">
+                {composer.born}–{composer.died} · {composer.country.ru}
+              </p>
+              <p className="mt-7 max-w-md font-serif text-lg italic leading-7 text-[#765626]">
+                {profile.quote}
+              </p>
+              <p className="mt-5 text-[10px] uppercase tracking-[.14em] text-black/42">{profile.roles}</p>
             </div>
 
+            <img
+              src={portrait}
+              alt={composer.name.ru}
+              className={`absolute bottom-0 right-0 h-full w-[53%] object-cover object-top grayscale contrast-110 ${isMozart ? "sepia-[.10]" : ""}`}
+            />
+            <div className="absolute inset-y-0 left-[47%] w-32 bg-gradient-to-r from-[#e8e0d4] via-[#e8e0d4]/80 to-transparent" />
+
             {hasJourney && (
-              <div className="pointer-events-none absolute bottom-16 right-8 z-[18] hidden text-right sm:block">
-                <p className="text-[9px] uppercase tracking-[.18em] text-black/40">Интерактивный портрет</p>
-                <p className="mt-1 font-serif text-sm italic text-[#8b6324]">Нажмите, чтобы открыть жизнь в музыке</p>
+              <div className="pointer-events-none absolute bottom-8 right-7 z-[18] hidden rounded-full border border-white/30 bg-black/45 px-4 py-2 text-[9px] uppercase tracking-[.14em] text-white/85 backdrop-blur sm:block">
+                Нажмите на портрет · жизнь в музыке
               </div>
             )}
 
             {isRachmaninoff && <ComposerJourneyLink />}
             {isMozart && <MozartJourneyLink />}
+          </header>
+
+          <section className="relative z-20 -mt-8 grid overflow-hidden rounded-2xl border border-black/10 bg-[#fffdf8]/95 shadow-xl shadow-black/5 backdrop-blur md:grid-cols-4 xl:grid-cols-8">
+            {facts.map(([label, value]) => (
+              <div key={label} className="min-h-24 border-b border-r border-black/10 p-4 last:border-r-0 md:border-b-0">
+                <small className="block text-[9px] uppercase tracking-[.12em] text-black/42">{label}</small>
+                <strong className="mt-3 block font-serif text-base font-medium leading-5 text-[#684c22]">{value}</strong>
+              </div>
+            ))}
+          </section>
+
+          <div className="mt-6">
+            <ComposerPassportTabs composer={composer} works={works} hasJourney={hasJourney} />
           </div>
+        </div>
+      </section>
 
-          <div className="relative z-30 -mt-[54px] px-7 sm:px-10 lg:px-14">
-            <div className="grid gap-0 border-t border-black/10 bg-[#fbf8f2]/95 lg:grid-cols-[31%_69%]">
-              <div className="border-r border-black/10 px-0 py-5 pr-8">
-                <p className="text-[10px] uppercase tracking-[.14em] text-[#9b7130]">Коротко</p>
-                <p className="mt-3 max-w-[310px] text-xs leading-5 text-black/58 sm:text-sm sm:leading-6">
-                  {composer.biography.ru}
-                </p>
-                <p className="mt-4 text-[9px] uppercase tracking-[.14em] text-black/34">{profile.roles}</p>
-              </div>
+      <aside className="fixed inset-y-0 right-0 z-30 hidden w-[310px] overflow-y-auto border-l border-black/10 bg-[#fbf8f2] p-5 lg:block">
+        <section className="rounded-2xl border border-black/10 bg-white/65 p-5 shadow-sm">
+          <h2 className="font-serif text-xl">ПАСПОРТ КОМПОЗИТОРА</h2>
+          <p className="mt-1 text-sm text-black/50">№ {profile.code}</p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4">
-                {stats.map(([label, value]) => (
-                  <div key={label} className="min-h-[108px] border-b border-r border-black/10 px-5 py-5 sm:border-b-0">
-                    <small className="block text-[8px] uppercase tracking-[.1em] text-black/38">{label}</small>
-                    <strong className="mt-3 block font-serif text-base font-medium leading-5 text-[#674b20] sm:text-lg">
-                      {value}
-                    </strong>
-                  </div>
-                ))}
-              </div>
+          <div className="mt-5 overflow-hidden rounded-xl border border-black/10 bg-[#ded5c8]">
+            <div className="relative h-44">
+              <img src={portrait} alt="" className="absolute inset-0 h-full w-full object-cover object-top grayscale" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+              <p className="absolute bottom-3 left-3 right-3 text-xs text-white/85">{composer.fullName.ru}</p>
             </div>
           </div>
+
+          <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-xl border border-black/10 text-sm">
+            {facts.slice(0, 6).map(([label, value]) => (
+              <div key={label} className="min-h-20 border-b border-r border-black/10 p-3">
+                <small className="block text-[9px] uppercase text-black/40">{label}</small>
+                <strong className="mt-2 block font-serif font-medium leading-5">{value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <a href="#composer-works" className="mt-5 block w-full rounded-xl bg-[#17243a] px-4 py-4 text-center text-sm font-medium text-white">
+            ♫ Открыть произведения
+          </a>
+          <button className="mt-3 w-full rounded-xl border border-black/10 px-4 py-4 text-sm">♡ Добавить в библиотеку</button>
         </section>
 
-        <div className="px-7 pb-16 sm:px-10 lg:px-14">
-          <ComposerPassportTabs composer={composer} works={works} hasJourney={hasJourney} />
-        </div>
-      </div>
+        <section className="mt-5 rounded-2xl border border-black/10 bg-white/65 p-5">
+          <h3 className="font-serif text-lg">БЫСТРАЯ НАВИГАЦИЯ</h3>
+          <div className="mt-5 grid grid-cols-4 gap-3 text-center text-[10px] text-black/60">
+            {[["▤", "Биография"], ["♫", "Произведения"], ["◷", "Хронология"], ["☆", "Цитаты"]].map(([icon, label]) => (
+              <div key={label}>
+                <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-black/5 text-lg text-[#8c6424]">{icon}</span>
+                <span className="mt-2 block">{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+
+      <nav className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-black/10 bg-[#fffdf8]/95 px-2 py-2 backdrop-blur lg:hidden">
+        {[["⌑", "Атлас", "/atlas"], ["♙", "Композиторы", "/composers"], ["♫", "Произведения", "/works"], ["▣", "Библиотека", "/#library"], ["⌕", "Поиск", "/#search"]].map(([icon, label, href]) => (
+          <Link key={label} href={href} className={`grid place-items-center gap-1 text-[10px] ${label === "Композиторы" ? "text-[#9b7130]" : "text-black/50"}`}>
+            <span className="text-lg">{icon}</span>
+            {label}
+          </Link>
+        ))}
+      </nav>
     </main>
   );
 }
