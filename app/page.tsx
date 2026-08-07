@@ -1,237 +1,77 @@
-const destinations = [
-  {
-    number: "01",
-    title: "Atlas",
-    description: "Эпохи, композиторы и произведения в единой музыкальной карте.",
-    meta: "7 эпох · 30 композиторов",
-  },
-  {
-    number: "02",
-    title: "Musical Passport",
-    description: "История, форма, сложность и исполнительская жизнь произведения.",
-    meta: "Первый паспорт: Рахманинов",
-  },
-  {
-    number: "03",
-    title: "Collections",
-    description: "ХТК Баха, концертные программы и тематические маршруты.",
-    meta: "48 прелюдий и фуг",
-  },
-  {
-    number: "04",
-    title: "My Soul Library",
-    description: "Личная история: люблю, учу, исполнял и хочу сыграть.",
-    meta: "Ваш музыкальный путь",
-  },
-];
+import Link from "next/link";
+import PrimaryNav from "@/components/PrimaryNav";
 
-const eras = [
-  ["1600", "Барокко"],
-  ["1750", "Классицизм"],
-  ["1810", "Романтизм"],
-  ["1880", "Импрессионизм"],
-  ["1900", "XX век"],
-  ["2000", "Неоклассика"],
+const destinations = [
+  { icon: "◎", title: "Атлас", subtitle: "Исследовать эпохи", href: "/atlas" },
+  { icon: "♫", title: "Произведения", subtitle: "Открыть музыкальные паспорта", href: "/works" },
+  { icon: "♙", title: "Композиторы", subtitle: "Встретиться с мастерами", href: "/composers" },
+  { icon: "◷", title: "Хронология", subtitle: "История музыки", href: "/timeline" },
+  { icon: "▣", title: "Библиотека", subtitle: "Моя музыкальная полка", href: "/#library" },
+  { icon: "☆", title: "Коллекции", subtitle: "Тематические подборки", href: "/#collections" },
 ];
 
 export default function Home() {
   return (
-    <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="Piano Atlas — на главную">
-          <span className="brand-mark" aria-hidden="true">
-            <span>L</span>
-            <span>V</span>
-          </span>
-          <span className="brand-copy">
-            <strong>Piano Atlas</strong>
-            <small>for my soul</small>
-          </span>
-        </a>
+    <main className="min-h-screen bg-[#f6f1e8] text-[#171714]">
+      <div className="mx-auto min-h-screen max-w-[1500px] overflow-hidden border-x border-black/5 bg-[#fbf8f2] shadow-[0_25px_90px_rgba(61,45,21,.10)]">
+        <PrimaryNav />
 
-        <nav className="desktop-nav" aria-label="Главная навигация">
-          <a href="#atlas">Atlas</a>
-          <a href="#passport">Passport</a>
-          <a href="#journey">Journey</a>
-        </nav>
+        <section className="relative min-h-[720px] overflow-hidden border-b border-black/10 lg:min-h-[760px]">
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(251,248,242,.99)_0%,rgba(251,248,242,.97)_31%,rgba(251,248,242,.62)_53%,rgba(251,248,242,.08)_76%),url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1800&q=88')] bg-cover bg-[68%_center]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_30%,rgba(255,255,255,.92),transparent_36%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#eee6d8] via-[#f5efe5]/70 to-transparent" />
 
-        <button className="language-button" type="button" aria-label="Выбор языка">
-          RU <span aria-hidden="true">⌄</span>
-        </button>
-      </header>
-
-      <section className="hero" id="top">
-        <div className="hero-glow hero-glow-one" />
-        <div className="hero-glow hero-glow-two" />
-
-        <div className="hero-inner">
-          <p className="eyebrow">PRELUDE · ПЕРВАЯ ГЛАВА</p>
-          <h1>
-            Музыка — это больше,
-            <span>чем ноты.</span>
-          </h1>
-          <p className="hero-description">
-            Изучайте историю произведений, понимайте их форму и создавайте
-            собственный путь пианиста.
-          </p>
-
-          <div className="hero-actions">
-            <a className="primary-button" href="#atlas">
-              Открыть атлас <span aria-hidden="true">→</span>
-            </a>
-            <a className="text-link" href="#passport">
-              Посмотреть музыкальный паспорт
-            </a>
-          </div>
-
-          <div className="dedication">
-            <span className="dedication-line" />
-            <p>
-              Создано Ильёй Лыгиным
-              <br />
-              для Валерии Лыгиной
-            </p>
-          </div>
-        </div>
-
-        <div className="piano-art" aria-hidden="true">
-          <div className="piano-lid" />
-          <div className="piano-body">
-            <div className="music-lines">
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-              <b className="note note-one">♪</b>
-              <b className="note note-two">♩</b>
-              <b className="note note-three">♫</b>
-            </div>
-            <div className="keys">
-              {Array.from({ length: 18 }).map((_, index) => (
-                <span key={index} className={index % 7 === 1 || index % 7 === 3 || index % 7 === 6 ? "black-key" : ""} />
-              ))}
+          <div className="relative z-10 flex min-h-[610px] items-center px-7 pb-28 pt-12 sm:px-12 md:px-16 lg:px-[8%]">
+            <div className="max-w-[520px]">
+              <p className="mb-3 text-[10px] uppercase tracking-[.28em] text-[#a37a36]">Музыкальный атлас</p>
+              <h1 className="font-serif text-[clamp(3.6rem,6vw,6.5rem)] leading-[.88] tracking-[-.045em]">
+                Piano Atlas
+                <span className="mt-3 block font-normal italic">for my soul</span>
+              </h1>
+              <p className="mt-8 font-serif text-xl text-black/72 sm:text-2xl">Исследуйте. Понимайте. Исполняйте.</p>
+              <div className="mt-5 h-px w-28 bg-[#a67d35]" />
+              <p className="mt-6 max-w-md text-sm leading-7 text-black/56 sm:text-base">
+                История музыки, композиторы, произведения и личная библиотека — в одном спокойном пространстве.
+              </p>
+              <Link
+                href="/atlas"
+                className="mt-8 inline-flex items-center gap-5 rounded-lg bg-[#a67d35] px-6 py-4 text-xs font-semibold uppercase tracking-[.08em] text-white shadow-lg shadow-[#a67d35]/20 transition hover:-translate-y-0.5 hover:bg-[#8f692d]"
+              >
+                Войти в атлас <span className="text-base">→</span>
+              </Link>
             </div>
           </div>
-          <div className="piano-leg piano-leg-one" />
-          <div className="piano-leg piano-leg-two" />
-        </div>
 
-        <a className="scroll-cue" href="#atlas" aria-label="Прокрутить вниз">
-          <span>ПРОДОЛЖИТЬ</span>
-          <i>↓</i>
-        </a>
-      </section>
+          <div className="absolute inset-x-7 bottom-7 z-20 grid grid-cols-2 gap-2 sm:inset-x-10 sm:grid-cols-3 lg:inset-x-14 lg:grid-cols-6">
+            {destinations.map((item) => (
+              <Link
+                key={item.title}
+                id={item.title === "Библиотека" ? "library" : item.title === "Коллекции" ? "collections" : undefined}
+                href={item.href}
+                className="group min-h-[122px] rounded-xl border border-black/8 bg-[#fffdf9]/92 p-5 text-center shadow-[0_12px_32px_rgba(42,31,14,.08)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-[#a67d35]/30"
+              >
+                <span className="mx-auto block font-serif text-3xl text-[#a67d35] transition group-hover:scale-110">{item.icon}</span>
+                <strong className="mt-3 block font-serif text-base font-medium">{item.title}</strong>
+                <small className="mt-1 block text-[10px] leading-4 text-black/45">{item.subtitle}</small>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-      <section className="section atlas-section" id="atlas">
-        <div className="section-heading">
+        <section className="grid gap-8 px-7 py-14 sm:px-12 lg:grid-cols-[1fr_auto] lg:px-16">
           <div>
-            <p className="eyebrow">ВАШЕ ПРОСТРАНСТВО</p>
-            <h2>Откройте музыку по-своему.</h2>
+            <p className="text-[10px] uppercase tracking-[.24em] text-[#a37a36]">Piano Atlas for my soul</p>
+            <h2 className="mt-4 max-w-3xl font-serif text-3xl leading-tight sm:text-4xl">
+              Не просто энциклопедия, а место, где биография композитора соединяется с произведениями и музыкой.
+            </h2>
           </div>
-          <p>
-            Piano Atlas объединяет энциклопедию, обучение и личную библиотеку
-            в одном спокойном пространстве.
-          </p>
-        </div>
-
-        <div className="destination-grid">
-          {destinations.map((item) => (
-            <article className="destination-card" key={item.number}>
-              <span className="card-number">{item.number}</span>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-              <div className="card-footer">
-                <small>{item.meta}</small>
-                <span aria-hidden="true">↗</span>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section passport-section" id="passport">
-        <div className="passport-copy">
-          <p className="eyebrow">MUSICAL PASSPORT</p>
-          <h2>У каждого произведения есть биография.</h2>
-          <p>
-            Не просто PDF с нотами, а живое досье: когда и где написано,
-            сколько лет было автору, как устроена форма и какие исполнения
-            изменили историю произведения.
-          </p>
-          <a className="text-link dark-link" href="#journey">
-            Изучить концепцию <span aria-hidden="true">→</span>
-          </a>
-        </div>
-
-        <article className="passport-preview">
-          <div className="passport-topline">
-            <span>PA · 1892 · 0032</span>
-            <span>ROMANTIC ERA</span>
+          <div className="flex items-end">
+            <Link href="/composers/sergei-rachmaninoff" className="text-sm text-[#8b6324] hover:underline">
+              Открыть паспорт Рахманинова →
+            </Link>
           </div>
-          <div className="passport-title">
-            <p>Сергей Рахманинов</p>
-            <h3>Прелюдия до-диез минор</h3>
-            <span>Op. 3 №2</span>
-          </div>
-          <div className="passport-facts">
-            <div>
-              <small>ГОД</small>
-              <strong>1892</strong>
-            </div>
-            <div>
-              <small>ВОЗРАСТ</small>
-              <strong>19 лет</strong>
-            </div>
-            <div>
-              <small>МЕСТО</small>
-              <strong>Москва</strong>
-            </div>
-            <div>
-              <small>ФОРМА</small>
-              <strong>A–B–A′</strong>
-            </div>
-          </div>
-          <div className="form-map">
-            <span>A · LENTO</span>
-            <span>B · AGITATO</span>
-            <span>A′ · TEMPO I</span>
-          </div>
-          <blockquote>
-            «Музыка пришла ко мне настолько настойчиво, что я должен был её
-            записать».
-          </blockquote>
-        </article>
-      </section>
-
-      <section className="section timeline-section" id="journey">
-        <div className="section-heading compact-heading">
-          <div>
-            <p className="eyebrow">ИСТОРИЯ ВО ВРЕМЕНИ</p>
-            <h2>От Баха до неоклассики.</h2>
-          </div>
-          <p>Шесть эпох — одна непрерывная история фортепианной музыки.</p>
-        </div>
-
-        <div className="timeline">
-          {eras.map(([year, era], index) => (
-            <div className="timeline-item" key={era}>
-              <span className="timeline-dot" />
-              <small>{year}</small>
-              <strong>{era}</strong>
-              {index < eras.length - 1 && <i aria-hidden="true" />}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <footer className="site-footer">
-        <div className="footer-mark">LV</div>
-        <p>Piano Atlas for my soul</p>
-        <small>By Lygin Ilya for Lygina Valeriya.</small>
-      </footer>
+        </section>
+      </div>
     </main>
   );
 }
